@@ -14,7 +14,7 @@ const answer = id => ({ kind: 'turn-completed', id, text: 'The agent finished it
 async function fixture() {
   await mkdir(path.join(root, '.cache'), { recursive: true });
   const repo = await mkdtemp(path.join(root, '.cache', 'activity-test-'));
-  const sessions = await new Sessions(repo, path.join(repo, '.mrmak')).init();
+  const sessions = await new Sessions(repo, path.join(repo, '.iaar')).init();
   const item = sessions.make({ id: 'chat-a', name: 'Activity Review', agent: 'codex', open: false, status: 'running', createdAt: new Date().toISOString(), cols: 80, rows: 25 });
   sessions.items.set(item.id, item);
   return { repo, sessions, item };
@@ -59,7 +59,7 @@ test('unread answers survive new work and restart; stale acknowledgements and du
     assert.equal(item.unread, true);
     sessions.nativeEvent(item, { kind: 'turn-started' });
     await sessions.close();
-    restored = await new Sessions(repo, path.join(repo, '.mrmak')).init();
+    restored = await new Sessions(repo, path.join(repo, '.iaar')).init();
     const saved = restored.get(item.id);
     assert.equal(saved.unread, true); assert.equal(saved.activity, 'idle'); assert.equal(saved.status, 'stopped');
     restored.seen(item.id, saved.completionVersion);

@@ -1,10 +1,10 @@
 # Local dictation
 
 Dictation puts recognized text into the focused terminal or text field.
-Mr. Mak's voice assistant instead carries on a conversation and can call tools.
+Iaar's voice assistant instead carries on a conversation and can call tools.
 You can use either, both or neither.
 
-Mr. Mak now has built-in microphone dictation for desktop chats, the Mak composer,
+Iaar now has built-in microphone dictation for desktop chats, the Iaar composer,
 and mobile. See [setup and behavior](../docs/mobile-access.md#voice-input).
 Run `scripts/setup-local-dictation.ps1` once to install free local faster-whisper
 and its multilingual small model. Record, stop, review, then explicitly insert

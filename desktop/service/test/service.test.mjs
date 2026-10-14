@@ -16,7 +16,7 @@ async function fixture() {
   await mkdir(path.join(repo, 'workspace', 'A space'), { recursive: true });
   await mkdir(path.join(repo, 'inbox')); await mkdir(path.join(repo, 'projects'));
   await mkdir(path.join(repo, 'ui'));
-  await writeFile(path.join(repo, 'ui', 'index.html'), '<html>Mr. Mak UI</html>');
+  await writeFile(path.join(repo, 'ui', 'index.html'), '<html>Iaar UI</html>');
   await writeFile(path.join(repo, 'workspace', 'workspace.json'), JSON.stringify({ entities: [] }));
   await writeFile(path.join(repo, 'workspace', 'A space', 'report.html'), '<html><img src="image.bin"></html>');
   await writeFile(path.join(repo, 'workspace', 'A space', 'image.bin'), Buffer.from('0123456789'));
@@ -223,9 +223,9 @@ test('context access reads project guidance and excludes credential and runtime 
     await writeFile(path.join(repo, 'projects', 'brief.md'), '# Project brief\nA task description.');
     assert.match((await library.read('projects/brief.md')).text, /task description/);
     await assert.rejects(library.read('.env'), /Private runtime/);
-    await mkdir(path.join(repo, '.mrmak'), { recursive: true });
-    await writeFile(path.join(repo, '.mrmak', 'runtime.json'), '{}');
-    await assert.rejects(library.read('.mrmak/runtime.json'), /Private runtime/);
+    await mkdir(path.join(repo, '.iaar'), { recursive: true });
+    await writeFile(path.join(repo, '.iaar', 'runtime.json'), '{}');
+    await assert.rejects(library.read('.iaar/runtime.json'), /Private runtime/);
   } finally { await service.close(); }
 });
 

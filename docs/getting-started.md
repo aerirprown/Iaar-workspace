@@ -1,13 +1,13 @@
 # Getting started
 
-Mr. Mak is a local desktop workspace for working with several agents. Its files
+Iaar is a local desktop workspace for working with several agents. Its files
 are ordinary project files, and its chats are ordinary CLI sessions. You can
 keep using the same agents outside the app.
 
-**Required before setup: Codex CLI, Claude Code CLI or OpenCode, installed and
+**Required before setup: Codex CLI, Claude Code CLI, OpenCode, or the Cursor CLI, installed and
 configured with your own account.** Use at least one to guide the setup below.
-The optional voice coordinator requires Codex specifically; Kimi is another
-available terminal integration.
+The optional voice coordinator requires Codex specifically. Kimi is another
+terminal integration. Phone pairing and voice are not required for Cursor chats.
 
 ## Choose a folder
 
@@ -23,7 +23,7 @@ runtime and local service and installs for the current Windows user. WebView2
 is installed by its bootstrapper if needed. No administrator terminal is needed
 for ordinary app use.
 
-Run **Start Mr. Mak.cmd** from the cloned folder. The app remembers the selected
+Run **Start Iaar.cmd** from the cloned folder. The app remembers the selected
 repository. It opens Workspace and Chats as separate windows with separate
 taskbar identities. Closing a chat saves it to History; restoring its full
 conversation also relies on that CLI's native session files.
@@ -35,9 +35,11 @@ Install at least one required CLI using its current official Windows instruction
 - [Codex CLI](https://developers.openai.com/codex/cli)
 - [Claude Code](https://code.claude.com/docs/en/setup)
 - [OpenCode](https://opencode.ai/docs/)
+- [Cursor CLI](https://cursor.com/docs/cli/overview)
 
 [Kimi Code CLI](https://moonshotai.github.io/kimi-cli/en/) is available as an
-additional terminal integration after the base setup.
+additional terminal integration after the base setup. Cursor chats use your
+Cursor account: install the CLI, choose **+ > Cursor**, and sign in inside the terminal.
 
 Finish the CLI's sign-in flow with your own account. In Chats, press **+**, choose
 the provider and a descriptive English title. Start with a task such as
@@ -54,24 +56,24 @@ my game. Ask me for the missing game idea before replacing the example.”
 ## Subscriptions, API keys and OpenCode
 
 Claude Code can use a Claude Pro or Max login. Codex can use an eligible ChatGPT
-subscription login. You do not need to add an API key to Mr. Mak for those chats:
+subscription login. You do not need to add an API key to Iaar for those chats:
 it starts the real installed CLI and keeps its normal authentication and limits.
 See [Claude authentication](https://code.claude.com/docs/en/authentication) and
 [Codex authentication](https://developers.openai.com/codex/auth).
 
 For OpenCode, install and configure it first using its own provider setup. Check
-that `opencode` runs from a terminal, then choose **+ > OpenCode** in Mr. Mak.
+that `opencode` runs from a terminal, then choose **+ > OpenCode** in Iaar.
 Your chosen provider determines authentication and billing. A native Claude Code
 subscription does not automatically provide access through third-party clients.
 
 OpenCode chats support History, pinned tabs, files and clipboard screenshots.
 The app observes native session events to keep the correct conversation ID;
 your native OpenCode data must remain available for resume. Keep one conversation
-per Mr. Mak tab. Use a new tab for a new task. OpenCode controls its model and
+per Iaar tab. Use a new tab for a new task. OpenCode controls its model and
 reasoning settings. Auto-approve is off by default, and explicit deny rules still
 apply when it is enabled.
 
-OpenCode 1.x and 2.x use different plugin APIs. Mr. Mak selects the corresponding
+OpenCode 1.x and 2.x use different plugin APIs. Iaar selects the corresponding
 small session observer at launch, without writing global configuration. OpenCode
 2.x runs a private server for each terminal so tab histories stay separate.
 The MCP inspector currently lists Claude, Codex, Kimi and Cursor configurations;
@@ -94,7 +96,7 @@ The Help button opens a quick guide without creating a new chat.
 Copy `.env.example` to `.env` and add your own `OPENAI_API_KEY` to enable the
 OpenAI Live connection. Never commit that file. Sign in to Codex for the
 coordinator. Its model follows your account configuration; an optional
-`MRMAK_COORDINATOR_MODEL` overrides it. Model access depends on your account.
+`IAAR_COORDINATOR_MODEL` overrides it. Model access depends on your account.
 
 Voice requests can focus a chat, inspect a report, update a card or hand a larger
 task to a worker. Direct actions stay quick; a visible worker handles deliverables.
@@ -115,11 +117,11 @@ Command Line Tools (`xcode-select --install`), then run:
 
 ```bash
 ./setup.sh check      # report prerequisites
-./setup.sh desktop    # build Mr. Mak Workspace.app and a .dmg
+./setup.sh desktop    # build Iaar Workspace.app and a .dmg
 ```
 
-Drag `src-tauri/target/release/bundle/macos/Mr. Mak Workspace.app` to
-Applications and double-click **Start Mr. Mak.command** in the cloned folder.
+Drag `src-tauri/target/release/bundle/macos/Iaar Workspace.app` to
+Applications and double-click **Start Iaar.command** in the cloned folder.
 The build bundles a self-contained Node runtime, so a Homebrew Node is fine.
 The app is not signed: the first time, right-click it and choose Open.
 
@@ -164,11 +166,11 @@ powershell -ExecutionPolicy Bypass -File .\Setup.ps1 -Mode Update
 ```
 
 Run Update in a separate Windows PowerShell window opened from Start, outside
-Mr. Mak. An updater inside a managed chat would stop when you quit the app;
+Iaar. An updater inside a managed chat would stop when you quit the app;
 Setup detects that case before building. Update waits for you to quit from the
 tray, checks that the bundled service has exited, installs the build silently
 and opens the same repository again. Finish active chats before quitting.
-The registered installation folder is reused. Pass `-InstallDirectory 'D:\Apps\Mr. Mak Workspace'`
+The registered installation folder is reused. Pass `-InstallDirectory 'D:\Apps\Iaar Workspace'`
 if you need to choose it explicitly. The update never terminates your chats itself.
 
 For a report-only browser preview, only Node.js 22.20+ and npm are needed beyond

@@ -13,7 +13,7 @@ import { transcriptMessages } from '../mobile-transcript.mjs';
 import { TailscaleTransport } from '../mobile-tailscale.mjs';
 
 async function fixture(t) {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-mobile-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-mobile-'));
   await mkdir(path.join(repo, 'ui')); await writeFile(path.join(repo, 'ui/index.html'), '<html>Mobile fixture</html>');
   const sessions = new EventEmitter(), id = randomUUID();
   const session = { id, agent: 'codex', name: 'Test chat', status: 'running', cols: 100, rows: 30, process: {}, nativeId: null };
@@ -209,14 +209,14 @@ test('report boundaries resolve a linked repository and still reject external fo
   const { gateway, pair, request, repo } = await fixture(t), device = await pair();
   await mkdir(path.join(repo, 'workspace/example'), { recursive: true });
   await writeFile(path.join(repo, 'workspace/example/report.html'), '<h1>Linked workspace</h1>');
-  const outside = await mkdtemp(path.join(os.tmpdir(), 'mrmak-mobile-outside-'));
+  const outside = await mkdtemp(path.join(os.tmpdir(), 'iaar-mobile-outside-'));
   await writeFile(path.join(outside, 'private.html'), 'Outside the workspace');
   await symlink(outside, path.join(repo, 'workspace/external'), process.platform === 'win32' ? 'junction' : 'dir');
   await writeFile(path.join(repo, 'workspace/workspace.json'), JSON.stringify({ entities: [
     { id: 'example', title: 'Example', folder: 'example', steps: [{ name: 'Report', path: 'report.html' }] },
     { id: 'external', title: 'External', folder: 'external', steps: [{ name: 'Private', path: 'private.html' }] },
   ] }));
-  const aliasParent = await mkdtemp(path.join(os.tmpdir(), 'mrmak-mobile-alias-'));
+  const aliasParent = await mkdtemp(path.join(os.tmpdir(), 'iaar-mobile-alias-'));
   const alias = path.join(aliasParent, 'workspace');
   await symlink(repo, alias, process.platform === 'win32' ? 'junction' : 'dir');
   gateway.repo = alias;

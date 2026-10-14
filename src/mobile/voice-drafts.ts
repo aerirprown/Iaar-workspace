@@ -2,7 +2,7 @@ export interface VoiceDraft { id: string; audio: Blob; seconds: number; createdA
 
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('mrmak-mobile-voice', 1)
+    const request = indexedDB.open('iaar-mobile-voice', 1)
     request.onupgradeneeded = () => request.result.createObjectStore('recordings')
     request.onsuccess = () => resolve(request.result)
     request.onerror = () => reject(new Error('Could not save the recording on this phone.'))

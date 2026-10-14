@@ -48,10 +48,10 @@ pub fn discover() -> String {
     let home = std::env::var_os("HOME").map(PathBuf::from);
     let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/zsh".into());
     let mut command = std::process::Command::new(shell);
-    command.args(["-ilc", "printf '__MRMAK_PATH__%s__MRMAK_END__' \"$PATH\""]);
+    command.args(["-ilc", "printf '__IAAR_PATH__%s__IAAR_END__' \"$PATH\""]);
     let path = bounded_output(&mut command, std::time::Duration::from_millis(2000))
-        .and_then(|text| text.rsplit_once("__MRMAK_PATH__").map(|(_, value)| value.to_owned()))
-        .and_then(|text| text.split_once("__MRMAK_END__").map(|(value, _)| value.to_owned()))
+        .and_then(|text| text.rsplit_once("__IAAR_PATH__").map(|(_, value)| value.to_owned()))
+        .and_then(|text| text.split_once("__IAAR_END__").map(|(value, _)| value.to_owned()))
         .filter(|value| !value.is_empty() && !value.contains(['\n', '\r', '\0']));
     path.unwrap_or_else(|| fallback(home.as_deref(), &inherited))
 }

@@ -10,9 +10,9 @@ import { MobileDictation, AUDIO_LIMIT } from '../mobile-dictation.mjs';
 const audio = Buffer.concat([Buffer.from([0x1a, 0x45, 0xdf, 0xa3]), Buffer.alloc(32)]);
 const request = (id = randomUUID(), bytes = audio, extra = {}) => Object.assign(Readable.from([bytes]), { headers: { 'content-type': 'audio/webm;codecs=opus', 'x-transcription-id': id, ...extra } });
 async function fixture(t, options = {}) {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-dictation-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-dictation-'));
   const calls = [];
-  const dictation = new MobileDictation(repo, { env: { OPENROUTER_API_KEY: 'test-key', MRMAK_TRANSCRIBE_PROVIDER: 'openrouter' }, fetcher: async (url, options) => { calls.push({ url, options }); return Response.json({ text: ' A spoken thought. ' }); }, ...options });
+  const dictation = new MobileDictation(repo, { env: { OPENROUTER_API_KEY: 'test-key', IAAR_TRANSCRIBE_PROVIDER: 'openrouter' }, fetcher: async (url, options) => { calls.push({ url, options }); return Response.json({ text: ' A spoken thought. ' }); }, ...options });
   t.after(() => dictation.close()); return { dictation, calls, repo };
 }
 
@@ -31,14 +31,14 @@ test('dictation uses the desktop key, supported multipart audio and returns only
 });
 
 test('explicit provider, legacy key aliases and changes to .env work without exposing credentials', async t => {
-  const { dictation, repo, calls } = await fixture(t, { env: { MRMAK_TRANSCRIBE_PROVIDER: 'openai' } });
+  const { dictation, repo, calls } = await fixture(t, { env: { IAAR_TRANSCRIBE_PROVIDER: 'openai' } });
   assert.equal((await dictation.status()).available, false);
   await assert.rejects(dictation.transcribe(request(), 'phone'), /needs OPENROUTER_API_KEY/);
-  await writeFile(path.join(repo, '.env'), 'OPENAI_KEY=private-key\nOPENROUTER_KEY=router-key\nMRMAK_TRANSCRIBE_PROVIDER=openai\n');
+  await writeFile(path.join(repo, '.env'), 'OPENAI_KEY=private-key\nOPENROUTER_KEY=router-key\nIAAR_TRANSCRIBE_PROVIDER=openai\n');
   await dictation.transcribe(request(), 'phone');
   assert.equal(calls[0].url, 'https://api.openai.com/v1/audio/transcriptions');
   assert.equal(calls[0].options.body.get('model'), 'gpt-4o-transcribe');
-  await writeFile(path.join(repo, '.env'), 'OPENAI_KEY=private-key\nMRMAK_TRANSCRIBE_PROVIDER=off\n');
+  await writeFile(path.join(repo, '.env'), 'OPENAI_KEY=private-key\nIAAR_TRANSCRIBE_PROVIDER=off\n');
   assert.equal((await dictation.status()).available, false);
 });
 

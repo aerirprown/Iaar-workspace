@@ -90,7 +90,7 @@ try {
   await page.goto(`${url}#/creative-mcp/0`);
   await page.locator('.report-document[aria-busy=false]').waitFor();
   const report = page.frameLocator('iframe.report-frame');
-  assert.equal(await report.locator('html').getAttribute('data-mrmak-theme'), 'light');
+  assert.equal(await report.locator('html').getAttribute('data-iaar-theme'), 'light');
   assert.equal(await report.locator('body').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(255, 255, 255)');
   await page.reload();
   await page.locator('.report-document[aria-busy=false]').waitFor();

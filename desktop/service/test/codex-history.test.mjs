@@ -10,12 +10,12 @@ import { Sessions } from '../sessions.mjs';
 const cwd = path.resolve('test-project');
 const now = Date.parse('2026-09-29T19:12:57Z'); // September 30 in Bangkok.
 const chat = { id: 'app-chat-a', cwd, createdAt: new Date(now).toISOString(), startedAt: now };
-async function fixture() { return mkdtemp(path.join(os.tmpdir(), 'mrmak-codex-history-')); }
+async function fixture() { return mkdtemp(path.join(os.tmpdir(), 'iaar-codex-history-')); }
 async function transcript(home, { day = '2026/09/30', id = randomUUID(), owner = chat.id, source = 'cli', directory = cwd, instructions = '' } = {}) {
   const folder = path.join(home, 'sessions', day);
   await mkdir(folder, { recursive: true });
   const file = path.join(folder, `rollout-example-${id}.jsonl`);
-  await writeFile(file, JSON.stringify({ type: 'session_meta', payload: { id, cwd: directory, source, originator: `mrmak_chat_${owner}`, instructions } }) + '\n');
+  await writeFile(file, JSON.stringify({ type: 'session_meta', payload: { id, cwd: directory, source, originator: `iaar_chat_${owner}`, instructions } }) + '\n');
   return { id, file };
 }
 
@@ -62,7 +62,7 @@ test('never guesses between ambiguous owners, other folders, subagents or unrela
 test('History resumes the original missing-ID conversation and persists the recovered binding', async () => {
   const home = await fixture();
   const expected = await transcript(home, { day: '2026/01/01' });
-  const state = path.join(home, 'mrmak');
+  const state = path.join(home, 'iaar');
   const priorHome = process.env.CODEX_HOME;
   process.env.CODEX_HOME = home;
   let sessions;
@@ -91,7 +91,7 @@ test('closing immediately captures a native ID before terminating the process; a
   process.env.CODEX_HOME = home;
   let sessions;
   try {
-    sessions = await new Sessions(cwd, path.join(home, 'mrmak')).init();
+    sessions = await new Sessions(cwd, path.join(home, 'iaar')).init();
     const item = sessions.make({ ...chat, agent: 'codex', name: 'Closed chat', open: true, nativeId: null, cols: 80, rows: 24 });
     sessions.items.set(item.id, item);
     let onExit;

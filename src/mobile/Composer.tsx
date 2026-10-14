@@ -7,7 +7,7 @@ import { messageWithWorkspaceContext } from './workspace-context'
 interface Draft { text: string; images: { id: string; name: string }[]; requestId?: string; voiceIds?: string[]; deliveryText?: string }
 interface Receipt { status: 'delivered' | 'sending' | 'uncertain' | 'failed'; error?: string }
 export default function Composer({ id, connected, running, active = true }: { id: string; connected: boolean; running: boolean; active?: boolean }) {
-  const storage = `mrmak.mobile.draft.${id}`
+  const storage = `iaar.mobile.draft.${id}`
   const [draft, setDraft] = useState<Draft>(() => { try { return JSON.parse(localStorage.getItem(storage) || '') } catch { return { text: '', images: [] } } })
   const [busy, setBusy] = useState(false), [uploading, setUploading] = useState(false), [status, setStatus] = useState(''), [uncertain, setUncertain] = useState(false)
   const picker = useRef<HTMLInputElement>(null)

@@ -11,7 +11,7 @@ export async function updateWorkspaceEntity(id: string, patch: EntityPatch) {
   const route = `/workspace/entities/${encodeURIComponent(id)}`
   if (!isDesktop) throw new Error('Open the desktop app to edit Workspace cards.')
   await api(route, patch, 'PATCH')
-  window.dispatchEvent(new Event('mrmak-workspace-changed'))
+  window.dispatchEvent(new Event('iaar-workspace-changed'))
 }
 
 export function archiveCutoff(): string {
@@ -60,12 +60,12 @@ export function useWorkspace() {
       if (document.visibilityState === 'visible') reload()
     }
     window.addEventListener('focus', refresh)
-    window.addEventListener('mrmak-workspace-changed', refresh)
+    window.addEventListener('iaar-workspace-changed', refresh)
     document.addEventListener('visibilitychange', refresh)
     const timer = window.setInterval(refresh, POLL_MS)
     return () => {
       window.removeEventListener('focus', refresh)
-      window.removeEventListener('mrmak-workspace-changed', refresh)
+      window.removeEventListener('iaar-workspace-changed', refresh)
       document.removeEventListener('visibilitychange', refresh)
       window.clearInterval(timer)
     }

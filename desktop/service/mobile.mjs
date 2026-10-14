@@ -18,7 +18,7 @@ import { MobileDictation } from './mobile-dictation.mjs';
 const digest = value => createHash('sha256').update(value).digest('hex');
 const fail = (message, status = 400) => { throw Object.assign(new Error(message), { status }); };
 const uuid = value => typeof value === 'string' && /^[a-f0-9-]{36}$/i.test(value);
-const COOKIE = 'mrmak_mobile';
+const COOKIE = 'iaar_mobile';
 const PAIR_TTL = 5 * 60 * 1000;
 const DEVICE_TTL = 180 * 24 * 60 * 60 * 1000;
 const send = (ws, value) => { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(value)); };
@@ -143,13 +143,13 @@ export class MobileGateway {
   }
   device(request) {
     const credential = String(request.headers.cookie || '').split(';').map(item => item.trim()).find(item => item.startsWith(`${COOKIE}=`))?.slice(COOKIE.length + 1);
-    if (!credential || credential.length > 100) fail('Connect this phone from the QR code in Mr. Mak Chats.', 401);
+    if (!credential || credential.length > 100) fail('Connect this phone from the QR code in Iaar Chats.', 401);
     const hash = digest(credential), device = this.state.devices.find(item => item.expires > Date.now() && equalSecret(item.hash, hash));
     if (!device) fail('This phone is disconnected. Scan a new QR code in Chats.', 401);
     return device;
   }
   checkRequest(request, mutation = false) {
-    if (!this.active) fail('Mobile access is off. Enable it in Mr. Mak Chats.', 503);
+    if (!this.active) fail('Mobile access is off. Enable it in Iaar Chats.', 503);
     if (request.headers.host !== new URL(this.origin).host) fail('Unexpected host', 403);
     if ((mutation || request.headers.origin) && request.headers.origin !== this.origin) fail('Unexpected origin', 403);
     // QR scanners can open the public app shell as a cross-site navigation.
@@ -308,7 +308,7 @@ export class MobileGateway {
       if (!['GET', 'HEAD'].includes(method)) fail('Not allowed', 405);
       if (route === '/mobile/manifest.webmanifest') {
         response.writeHead(200, { 'Content-Type': 'application/manifest+json' });
-        response.end(JSON.stringify({ id: '/mobile/', name: 'Mr. Mak Mobile', short_name: 'Mr. Mak', start_url: '/mobile/', scope: '/mobile/', display: 'standalone', background_color: '#0d0e12', theme_color: '#0d0e12', icons: [{ src: '/assets/mak-mobile-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/mak-mobile-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' }] })); return;
+        response.end(JSON.stringify({ id: '/mobile/', name: 'Iaar Mobile', short_name: 'Iaar', start_url: '/mobile/', scope: '/mobile/', display: 'standalone', background_color: '#0d0e12', theme_color: '#0d0e12', icons: [{ src: '/assets/mak-mobile-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/mak-mobile-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' }] })); return;
       }
       if (route === '/mobile/sw.js') {
         response.writeHead(200, { 'Content-Type': 'text/javascript', 'Service-Worker-Allowed': '/mobile/' });

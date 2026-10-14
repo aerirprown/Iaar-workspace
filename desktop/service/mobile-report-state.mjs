@@ -1,7 +1,7 @@
 // The opaque mobile report can report its own route/scroll only. It cannot call app APIs.
 export function mobileReportStatePrelude(parentOrigin) {
   const origin = JSON.stringify(parentOrigin).replace(/</g, '\\u003c');
-  return Buffer.from(`<script data-mrmak-mobile-state>
+  return Buffer.from(`<script data-iaar-mobile-state>
 (() => {
   const target = ${origin}, tracked = new Set(); let restoring = true, timer = 0, restoreVersion = 0;
   const send = (type, state) => parent.postMessage({ type, ...(state ? { state } : {}) }, target);
@@ -17,16 +17,16 @@ export function mobileReportStatePrelude(parentOrigin) {
   const capture = () => {
     if (restoring) return;
     const scrollers = [...tracked].filter(node => node.isConnected && (node.scrollTop || node.scrollLeft)).slice(0,12).map(node => ({ selector: selector(node), top: Math.max(0,node.scrollTop), left: Math.max(0,node.scrollLeft) })).filter(item => item.selector);
-    send('mrmak:report-state', { path: location.pathname.slice(1), hash: location.hash, top: Math.max(0,window.scrollY), left: Math.max(0,window.scrollX), scrollers });
+    send('iaar:report-state', { path: location.pathname.slice(1), hash: location.hash, top: Math.max(0,window.scrollY), left: Math.max(0,window.scrollX), scrollers });
   };
   const changed = () => { clearTimeout(timer); timer = setTimeout(capture, 80); };
   document.addEventListener('scroll', event => { const node = event.target; if (node instanceof Element && node !== document.scrollingElement) { tracked.add(node); if (tracked.size > 12) tracked.delete(tracked.values().next().value); } changed(); }, true); window.addEventListener('hashchange', changed);
   window.addEventListener('pagehide', capture);
   window.addEventListener('message', event => {
     if (event.source !== parent || event.origin !== target) return;
-    if (event.data?.type === 'mrmak:report-active') { if (event.data.active === false) document.querySelectorAll('video,audio').forEach(media => media.pause()); return; }
-    if (event.data?.type === 'mrmak:report-capture') { capture(); return; }
-    if (event.data?.type !== 'mrmak:report-restore') return;
+    if (event.data?.type === 'iaar:report-active') { if (event.data.active === false) document.querySelectorAll('video,audio').forEach(media => media.pause()); return; }
+    if (event.data?.type === 'iaar:report-capture') { capture(); return; }
+    if (event.data?.type !== 'iaar:report-restore') return;
     const state = event.data.state;
     if (!state || ![state.top,state.left].every(n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 1e7)) return;
     const version = ++restoreVersion; restoring = true;
@@ -46,7 +46,7 @@ export function mobileReportStatePrelude(parentOrigin) {
   });
   const userMoved = () => { if (restoring) { restoreVersion++; restoring = false; capture(); } };
   for (const type of ['pointerdown','wheel','keydown']) document.addEventListener(type, userMoved, { passive: true, capture: true });
-  window.addEventListener('load', () => send('mrmak:report-ready'));
+  window.addEventListener('load', () => send('iaar:report-ready'));
 })();
 </script>`);
 }

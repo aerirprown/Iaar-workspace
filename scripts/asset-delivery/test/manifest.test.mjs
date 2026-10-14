@@ -25,7 +25,7 @@ function plan(path = 'assets/out.txt') {
 }
 
 async function sandbox(t) {
-  const base = await mkdtemp(join(tmpdir(), 'mrmak-asset-test-'));
+  const base = await mkdtemp(join(tmpdir(), 'iaar-asset-test-'));
   assert.ok(base.startsWith(resolve(tmpdir()) + sep));
   t.after(() => rm(base, { recursive: true, force: true }));
   const root = join(base, 'root');

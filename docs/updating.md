@@ -6,15 +6,15 @@ context, credentials or agent conversations.
 
 ## Application
 
-1. Finish active agent tasks, then choose Quit from Mr. Mak's tray menu.
-2. Install **Mr. Mak Workspace 0.5.0** for Windows x64.
+1. Finish active agent tasks, then choose Quit from Iaar's tray menu.
+2. Install **Iaar Workspace 0.5.0** for Windows x64.
 3. Open the same repository you were using before. Your cards, settings and
    History remain in that folder.
 
 For a desktop build from source, run `Setup.ps1 -Mode Update` in an external
-Windows PowerShell window opened from Start, outside Mr. Mak. It replaces these steps:
-it builds the current source, waits for you to quit Mr. Mak, installs the build
-silently and starts Mr. Mak again. See [getting started](getting-started.md).
+Windows PowerShell window opened from Start, outside Iaar. It replaces these steps:
+it builds the current source, waits for you to quit Iaar, installs the build
+silently and starts Iaar again. See [getting started](getting-started.md).
 
 The 0.5.1 source update preserves your selected dictation provider, custom model
 and terminal appearance. Fresh setups default to local Whisper, which requires
@@ -31,7 +31,7 @@ your existing CLI account. Long links and paths stay within mobile chat cards.
 The Linux AppImage also includes a launcher permission fix.
 
 The History fix can reconnect a Codex conversation whose original native record
-still exists but whose ID was not saved by Mr. Mak. If that native history was
+still exists but whose ID was not saved by Iaar. If that native history was
 deleted or belongs to another account, the update cannot recreate it. Use
 New chat > Resume with a known native ID when importing an existing CLI chat.
 Saved terminal screens are retained when automatic recovery is not possible.
@@ -47,7 +47,7 @@ visual design, merge its updated source or add `data-mak-theme="custom"` to the
 root element to preserve its palette. See [customization](customization.md).
 
 Version 0.4.16 added **OpenCode** to New chat, History and the default-agent
-setting. Install and configure OpenCode separately, then reopen Mr. Mak if the
+setting. Install and configure OpenCode separately, then reopen Iaar if the
 command was just added to PATH. Existing Codex and Claude chats keep their login
 and settings. No API key is needed for their subscription-backed CLI chats;
 voice remains optional and uses a separately billed OpenAI API connection.

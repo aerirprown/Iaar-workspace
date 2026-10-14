@@ -28,7 +28,7 @@ await writeFile(path.join(repo, 'workspace/report/plan.md'), '# Mobile plan\n\n*
 await writeFile(path.join(repo, 'workspace/workspace.json'), JSON.stringify({ entities: [{ id: 'mobile-report', title: 'A useful report', folder: 'report', category: 'dev', created: '2026-10-06', steps: [{ name: 'Report', path: 'index.html' }, { name: 'Plan', path: 'plan.md' }] }] }));
 const transport = { probe: async () => ({ ready: true, installed: true }), enable: async origin => ({ origin }), disable: async () => {} };
 const voiceCalls = [];
-const dictation = new MobileDictation(repo, { env: { OPENROUTER_API_KEY: 'test-voice-key', MRMAK_TRANSCRIBE_PROVIDER: 'openrouter' }, fetcher: async (url, options) => {
+const dictation = new MobileDictation(repo, { env: { OPENROUTER_API_KEY: 'test-voice-key', IAAR_TRANSCRIBE_PROVIDER: 'openrouter' }, fetcher: async (url, options) => {
   voiceCalls.push({ url, size: options.body.get('file').size });
   return Response.json({ text: 'A dictated follow-up.' });
 } });
@@ -101,7 +101,7 @@ try {
     const response = await fetch(`${service.mobile.origin}${icon.src}`);
     assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /image\/png/);
   }
-  await desktop.getByAltText('Scan to connect this phone to Mr. Mak').waitFor();
+  await desktop.getByAltText('Scan to connect this phone to Iaar').waitFor();
   await desktop.screenshot({ path: path.join(repo, 'desktop-pairing.png') });
   const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   await mobileContext.addInitScript(() => {
@@ -164,7 +164,7 @@ try {
   // Open from another site like a QR scanner, rather than an address-bar visit.
   qrSource = http.createServer((_request, response) => {
     response.writeHead(200, { 'Content-Type': 'text/html' });
-    response.end(`<a href="${pairing.url}">Open Mr. Mak</a>`);
+    response.end(`<a href="${pairing.url}">Open Iaar</a>`);
   });
   await new Promise(resolve => qrSource.listen(0, 'localhost', resolve));
   await phone.goto(`http://localhost:${qrSource.address().port}`);
@@ -178,7 +178,7 @@ try {
     };
     service.mobile.server.on('request', inspect);
   });
-  await phone.getByRole('link', { name: 'Open Mr. Mak' }).click();
+  await phone.getByRole('link', { name: 'Open Iaar' }).click();
   assert.equal(await navigationSite, 'cross-site');
   await phone.getByRole('button', { name: 'Request connection' }).click();
   await phone.getByRole('heading', { name: 'Confirm on your computer' }).waitFor();
@@ -222,17 +222,17 @@ try {
     event.userChoice = Promise.resolve({ outcome: 'dismissed' });
     window.dispatchEvent(event);
   });
-  await phone.getByRole('complementary', { name: 'Install Mr. Mak' }).waitFor();
+  await phone.getByRole('complementary', { name: 'Install Iaar' }).waitFor();
   assert.equal(await phone.evaluate(() => window.installCalls), 0, 'Never open installation without a tap');
   await phone.screenshot({ path: path.join(repo, 'phone-install.png') });
   await phone.getByRole('button', { name: 'Not now', exact: true }).click();
-  assert.equal(await phone.getByRole('complementary', { name: 'Install Mr. Mak' }).count(), 0);
+  assert.equal(await phone.getByRole('complementary', { name: 'Install Iaar' }).count(), 0);
   await phone.getByRole('button', { name: 'Phone settings' }).click();
   const speechProvider = phone.getByRole('combobox', { name: 'Dictation provider' });
   await speechProvider.selectOption('local'); await expect(speechProvider).toHaveValue('local');
   await phone.getByText(/Local Whisper needs setup on your computer/).waitFor();
   await speechProvider.selectOption('openrouter'); await expect(speechProvider).toHaveValue('openrouter');
-  await phone.getByRole('button', { name: 'Install Mr. Mak', exact: true }).click();
+  await phone.getByRole('button', { name: 'Install Iaar', exact: true }).click();
   assert.equal(await phone.evaluate(() => window.installCalls), 1);
   await phone.getByRole('button', { name: 'Phone settings' }).click();
   await phone.evaluate(() => {
@@ -241,10 +241,10 @@ try {
     event.userChoice = Promise.resolve({ outcome: 'accepted' });
     window.dispatchEvent(event);
   });
-  assert.equal(await phone.getByRole('complementary', { name: 'Install Mr. Mak' }).count(), 0, 'Not now persists for this session');
+  assert.equal(await phone.getByRole('complementary', { name: 'Install Iaar' }).count(), 0, 'Not now persists for this session');
   await phone.getByRole('button', { name: 'Phone settings' }).click();
-  await phone.getByRole('button', { name: 'Install Mr. Mak', exact: true }).click();
-  await phone.getByText('Mr. Mak is installed on this phone.', { exact: true }).waitFor();
+  await phone.getByRole('button', { name: 'Install Iaar', exact: true }).click();
+  await phone.getByText('Iaar is installed on this phone.', { exact: true }).waitFor();
   await phone.evaluate(() => window.dispatchEvent(new Event('appinstalled')));
   await phone.getByRole('button', { name: 'Phone settings' }).click();
 
@@ -356,7 +356,7 @@ try {
   await expect(readingVoice.locator('option')).toHaveCount(2);
   assert.deepEqual(await readingVoice.locator('option').evaluateAll(options => options.map(option => option.value)), ['am_michael', 'bf_emma']);
   await readingVoice.selectOption('bf_emma');
-  assert.equal(await phone.evaluate(() => localStorage.getItem('mrmak.mobile.read-aloud.voice')), 'bf_emma');
+  assert.equal(await phone.evaluate(() => localStorage.getItem('iaar.mobile.read-aloud.voice')), 'bf_emma');
   await phone.getByRole('button', { name: 'Phone settings' }).click();
   await readButton.click();
   await phone.waitForFunction(() => window.testSpeech.spoken.at(-1)?.voice === 'bf_emma');
@@ -598,7 +598,7 @@ try {
   assert.equal(await phone.locator('.mobile-header h1').innerText(), 'A useful report');
   await expect.poll(() => frame.locator('#delayed-content').evaluate(node => node.offsetHeight)).toBe(2200);
   const htmlIdentity = await frame.locator('body').evaluate(() => { window.testReportIdentity = Math.random(); location.hash = '#chapter-two'; window.scrollTo(0,500); document.getElementById('nested-scroll').scrollTop = 180; return window.testReportIdentity; });
-  const reportKey = 'mrmak.mobile.report.mobile-report.0';
+  const reportKey = 'iaar.mobile.report.mobile-report.0';
   await expect.poll(() => phone.evaluate(key => JSON.parse(localStorage.getItem(key) || '{}').top, reportKey)).toBe(500);
   await phone.getByRole('button', { name: 'Chats', exact: true }).click();
   await expect(stableDraft).toBeVisible();
@@ -608,7 +608,7 @@ try {
   assert.equal(await frame.locator('body').evaluate(() => window.scrollY), 500);
   assert.equal(await frame.locator('#nested-scroll').evaluate(node => node.scrollTop), 180);
   const beforeForged = await phone.evaluate(key => localStorage.getItem(key), reportKey);
-  await phone.evaluate(() => window.dispatchEvent(new MessageEvent('message', { source: window, origin: 'null', data: { type: 'mrmak:report-state', state: { path: 'malicious', top: 999, left: 0 } } })));
+  await phone.evaluate(() => window.dispatchEvent(new MessageEvent('message', { source: window, origin: 'null', data: { type: 'iaar:report-state', state: { path: 'malicious', top: 999, left: 0 } } })));
   assert.equal(await phone.evaluate(key => localStorage.getItem(key), reportKey), beforeForged, 'Messages from another window cannot change report position');
   await reloadPhone();
   await frame.getByRole('heading', { name: 'Report ready' }).waitFor();
@@ -627,7 +627,7 @@ try {
   await phone.getByRole('button', { name: 'Send', exact: true }).click();
   await phone.getByRole('button', { name: 'Retry', exact: true }).waitFor();
   const deliveredContext = contextPayloads[0].text;
-  const contextMetadata = text => JSON.parse(/\n(\{[^\n]+\})\n<\/mrmak_workspace_context>$/.exec(text)[1]);
+  const contextMetadata = text => JSON.parse(/\n(\{[^\n]+\})\n<\/iaar_workspace_context>$/.exec(text)[1]);
   assert.deepEqual(contextMetadata(deliveredContext).workspace, { id: 'mobile-report', tabIndex: 0, title: 'A useful report', tab: 'Report', currentViewerPage: 'workspace/report/index.html', sectionAnchor: '#chapter-two' });
   assert.match(deliveredContext, /Do not read, open, or investigate this Workspace merely because this note is attached/);
   assert.ok(!deliveredContext.includes('/mobile/view/') && !deliveredContext.includes('Report ready'), 'No grant URL or report content is copied');
@@ -704,7 +704,7 @@ try {
   await phone.evaluate(async ({ id, data }) => {
     const response = await fetch(`/mobile/api/sessions/${id}/send`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
     if (!response.ok) throw new Error('Legacy fixture delivery failed');
-    localStorage.setItem(`mrmak.mobile.draft.${id}`, JSON.stringify(data));
+    localStorage.setItem(`iaar.mobile.draft.${id}`, JSON.stringify(data));
   }, { id: ids[1], data: legacyRequest });
   await reloadPhone(); await phone.getByRole('button', { name: 'Retry', exact: true }).waitFor();
   await phone.getByRole('button', { name: 'Retry', exact: true }).click(); await phone.getByText('Delivered to terminal', { exact: true }).waitFor();
@@ -742,7 +742,7 @@ try {
   await desktop.locator(`[data-chat-tab="${ids[0]}"]`).waitFor();
   await desktop.getByRole('button', { name: 'Mobile access', exact: true }).click();
   await desktop.getByRole('button', { name: 'Disconnect', exact: true }).click();
-  await phone.getByRole('heading', { name: 'Start in Mr. Mak Chats' }).waitFor();
+  await phone.getByRole('heading', { name: 'Start in Iaar Chats' }).waitFor();
   assert.equal(service.sessions.get(ids[0]).status, 'running'); assert.equal(service.sessions.get(ids[1]).status, 'running');
   if (navigationCancellations.length) console.log(`Expected WebKit read cancellations during reload: ${navigationCancellations.length}`);
   assert.deepEqual(errors, []);

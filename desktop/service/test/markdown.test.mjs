@@ -15,8 +15,8 @@ test('Markdown saves preserve Unicode, keep a recovery copy, and reject stale or
   const changed = await files.saveMarkdown({ path: file, text: '# New notes\n\n**Текст** 🐽\n', revision: preview.revision });
   assert.match(changed.text, /\*\*Текст\*\* 🐽/);
   assert.notEqual(preview.revision, changed.revision);
-  const backups = await readdir(path.join(repo, '.mrmak/markdown-backups'));
-  assert.equal(await readFile(path.join(repo, '.mrmak/markdown-backups', backups.find(name => name.endsWith('.md'))), 'utf8'), preview.text);
+  const backups = await readdir(path.join(repo, '.iaar/markdown-backups'));
+  assert.equal(await readFile(path.join(repo, '.iaar/markdown-backups', backups.find(name => name.endsWith('.md'))), 'utf8'), preview.text);
   await assert.rejects(files.saveMarkdown({ path: file, text: 'stale', revision: preview.revision }), /changed on disk/);
   assert.equal(await readFile(file, 'utf8'), changed.text);
   const racing = await Promise.allSettled(['first', 'second'].map(text => files.saveMarkdown({ path: file, text, revision: changed.revision })));

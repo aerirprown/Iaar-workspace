@@ -47,7 +47,7 @@ try {
   }
   for (const width of [1440, 760]) {
     await page.setViewportSize({ width, height: 1060 });
-    for (const entity of entities.filter(e => !process.env.MRMAK_QA_GAME_ONLY || e.id === 'my-dream-game')) {
+    for (const entity of entities.filter(e => !process.env.IAAR_QA_GAME_ONLY || e.id === 'my-dream-game')) {
       // Exercise the actual card link, which deliberately has no step index.
       await page.goto(service.urls.workspace + '#/');
       await page.locator(`.entity-card[data-entity="${entity.id}"]`).click();
@@ -132,7 +132,7 @@ try {
     checks.push({ skillProvider: provider, completeInstructions: true });
   }
   assert.deepEqual(errors, []);
-  const focused = Boolean(process.env.MRMAK_QA_GAME_ONLY);
+  const focused = Boolean(process.env.IAAR_QA_GAME_ONLY);
   await writeFile(path.join(root, `.cache/template-${focused ? 'game-' : ''}ui-result.json`), JSON.stringify({ passed: true, focused, checks, errors }, null, 2));
   console.log(`Template UI passed: ${checks.length} cases; ${focused ? 'game navigation, images, downloads, route defaults and both skill previews' : 'card defaults, explicit routes, game navigation, prompts, images, downloads, eight videos and both skill previews'}.`);
 } finally { await browser?.close(); await service.close(); }

@@ -67,7 +67,7 @@ export async function findCodexChat(session, { full = false, now = Date.now(), h
     const meta = await readCodexMetadata(file);
     // The per-terminal owner is proof. Never substitute another recent chat in
     // the same folder, or a subagent, merely because its timestamp looks close.
-    if (meta?.originator === `mrmak_chat_${session.id}` && meta.source === 'cli' && sameFolder(meta.cwd, session.cwd)) matches.push({ ...meta, file });
+    if (meta?.originator === `iaar_chat_${session.id}` && meta.source === 'cli' && sameFolder(meta.cwd, session.cwd)) matches.push({ ...meta, file });
   }
   return matches.length === 1 ? matches[0] : null;
 }

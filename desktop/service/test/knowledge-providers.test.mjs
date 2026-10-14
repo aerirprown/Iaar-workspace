@@ -6,7 +6,7 @@ import path from 'node:path';
 import { MarkdownKnowledgeProvider } from '../knowledge/providers.mjs';
 
 test('Markdown knowledge provider searches and retrieves source-scoped documents', async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'mrmak-knowledge-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'iaar-knowledge-'));
   await mkdir(path.join(root, 'notes'));
   await writeFile(path.join(root, 'notes', 'project.md'), '# Project context\n\nGodot and Linux notes.\n');
   const provider = new MarkdownKnowledgeProvider(root);
@@ -20,7 +20,7 @@ test('Markdown knowledge provider searches and retrieves source-scoped documents
 });
 
 test('Markdown knowledge search does not expose files symlinked from outside its root', { skip: process.platform !== 'linux' }, async () => {
-  const parent = await mkdtemp(path.join(os.tmpdir(), 'mrmak-knowledge-link-'));
+  const parent = await mkdtemp(path.join(os.tmpdir(), 'iaar-knowledge-link-'));
   const root = path.join(parent, 'knowledge');
   const outside = path.join(parent, 'outside.md');
   await mkdir(root);

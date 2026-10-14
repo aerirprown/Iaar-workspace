@@ -19,7 +19,7 @@ if (!existing || hash(existing) !== checksum) {
   if (!response.ok) throw new Error(`Official AppRun download failed: ${response.status}`);
   const bytes = Buffer.from(await response.arrayBuffer());
   if (hash(bytes) !== checksum) throw new Error('AppRun checksum changed; review the upstream binary before updating the pin.');
-  const temporary = `${launcher}.mrmak-${process.pid}`;
+  const temporary = `${launcher}.iaar-${process.pid}`;
   await writeFile(temporary, bytes, { mode: 0o755, flag: 'wx' });
   await rename(temporary, launcher);
 }

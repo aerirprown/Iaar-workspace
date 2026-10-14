@@ -20,7 +20,7 @@ try {
     await sleep(500);
   }
   if (!ready) throw new Error('Codex did not reach its prompt');
-  service.sessions.input(chat.id, 'This is a terminal connectivity check. Reply with exactly MRMAK_TERMINAL_OK. Do not use tools or change any files.', { coordinator: true, submit: true });
+  service.sessions.input(chat.id, 'This is a terminal connectivity check. Reply with exactly IAAR_TERMINAL_OK. Do not use tools or change any files.', { coordinator: true, submit: true });
   const deadline = Date.now() + 120000;
   while (Date.now() < deadline && !complete) await sleep(500);
   const current = await service.sessions.read(chat.id);
@@ -39,10 +39,10 @@ try {
     await sleep(500);
   }
   if (!resumeReady) throw new Error('The resumed terminal or completion watcher did not become ready');
-  service.sessions.input(chat.id, 'Reply with exactly MRMAK_RESUME_OK. Do not use tools or change any files.', { coordinator: true, submit: true });
+  service.sessions.input(chat.id, 'Reply with exactly IAAR_RESUME_OK. Do not use tools or change any files.', { coordinator: true, submit: true });
   const resumedDeadline = Date.now() + 120000;
   while (Date.now() < resumedDeadline && !complete) await sleep(500);
   const resumed = await service.sessions.read(chat.id);
-  console.log(JSON.stringify({ ready, nativeSessionIdentified: !!current.nativeId, turnCompleted: true, responseVisible: current.screen.includes('MRMAK_TERMINAL_OK'), resumedSameSession: resumed.nativeId === current.nativeId, resumedTurnCompleted: complete, resumedResponseVisible: resumed.screen.includes('MRMAK_RESUME_OK') }));
-  if (!complete || !resumed.screen.includes('MRMAK_RESUME_OK')) process.exitCode = 1;
+  console.log(JSON.stringify({ ready, nativeSessionIdentified: !!current.nativeId, turnCompleted: true, responseVisible: current.screen.includes('IAAR_TERMINAL_OK'), resumedSameSession: resumed.nativeId === current.nativeId, resumedTurnCompleted: complete, resumedResponseVisible: resumed.screen.includes('IAAR_RESUME_OK') }));
+  if (!complete || !resumed.screen.includes('IAAR_RESUME_OK')) process.exitCode = 1;
 } finally { await service.close(); }

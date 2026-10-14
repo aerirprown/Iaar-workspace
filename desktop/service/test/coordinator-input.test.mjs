@@ -8,7 +8,7 @@ import { createService } from '../server.mjs';
 
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jvWQAAAAASUVORK5CYII=', 'base64');
 async function fixture() {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-coordinator-test-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-coordinator-test-'));
   await mkdir(path.join(repo, 'workspace'));
   await writeFile(path.join(repo, 'workspace/workspace.json'), '{"entities":[]}');
   const service = await createService({ repo, uiDir: repo, mcpOptions: { home: repo, env: {} } });
@@ -42,15 +42,15 @@ test('coordinator receives image content and paths; retries never replay a compl
 });
 
 test('coordinator images must be actual, bounded images inside the upload folder, including through links', async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-image-validation-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-image-validation-'));
   const attachments = new Attachments(repo), image = await attachments.save(png, 'Valid.png');
   assert.deepEqual(await attachments.coordinatorImages([image.path, image.path]), [image.path]);
   const text = path.join(path.dirname(image.path), 'pretend.png'); await writeFile(text, 'This is a private text document.');
   for (const files of [null, {}, [text], [path.dirname(image.path)], Array(13).fill(image.path), ['relative.png']]) await assert.rejects(attachments.coordinatorImages(files));
-  const outside = await mkdtemp(path.join(os.tmpdir(), 'mrmak-outside-image-'));
+  const outside = await mkdtemp(path.join(os.tmpdir(), 'iaar-outside-image-'));
   await writeFile(path.join(outside, 'secret.png'), png);
   const alias = path.join(repo, 'inbox/attachments/linked'); await symlink(outside, alias, process.platform === 'win32' ? 'junction' : 'dir');
-  await assert.rejects(attachments.coordinatorImages([path.join(alias, 'secret.png')]), /uploaded through Mr. Mak/);
+  await assert.rejects(attachments.coordinatorImages([path.join(alias, 'secret.png')]), /uploaded through Iaar/);
   const handle = await open(image.path, 'r+'); await handle.truncate(MAX_IMAGE_BYTES + 1); await handle.close();
   await assert.rejects(attachments.coordinatorImages([image.path]), /smaller than 25 MB/);
 });

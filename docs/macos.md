@@ -1,4 +1,4 @@
-# Mr. Mak Workspace on macOS
+# Iaar Workspace on macOS
 
 The desktop app was built for Windows (and Linux). This document covers the macOS port:
 what changed, how to build and run it, how it was verified, and what is still open.
@@ -13,11 +13,11 @@ Prerequisites: Node.js 22.20+, [Rust](https://rustup.rs), Xcode Command Line Too
 
 ```bash
 ./setup.sh check      # report prerequisites
-./setup.sh desktop    # npm ci + build Mr. Mak Workspace.app and a .dmg
+./setup.sh desktop    # npm ci + build Iaar Workspace.app and a .dmg
 ```
 
-Output: `src-tauri/target/release/bundle/macos/Mr. Mak Workspace.app` (and `bundle/dmg/`).
-Copy the app to Applications and double-click **Start Mr. Mak.command** in the repository,
+Output: `src-tauri/target/release/bundle/macos/Iaar Workspace.app` (and `bundle/dmg/`).
+Copy the app to Applications and double-click **Start Iaar.command** in the repository,
 which opens the app on this repository. The build is not signed: the first launch needs
 right-click › Open, and macOS asks again for permissions (e.g. microphone) after each rebuild,
 because an ad-hoc signature changes with every build.
@@ -66,8 +66,8 @@ Development: `./node_modules/.bin/tauri dev -- -- --repo "$PWD"`. Without `--rep
   in IndexedDB as bytes, not Blobs (Safari Private Browsing).
 
 ### Scripts
-`setup.sh` (macOS/Linux counterpart of `Setup.ps1`), `Start Mr. Mak.command`
-(counterpart of `Start Mr. Mak.cmd`), `scripts/check-macos-native.sh`.
+`setup.sh` (macOS/Linux counterpart of `Setup.ps1`), `Start Iaar.command`
+(counterpart of `Start Iaar.cmd`), `scripts/check-macos-native.sh`.
 
 ## Verification
 
@@ -81,7 +81,7 @@ Development: `./node_modules/.bin/tauri dev -- -- --repo "$PWD"`. Without `--rep
 | Manual, on the release app | — | macOS labels; dropping a path with an apostrophe + `ls`; Show in Finder (folder and file); drag a file out to Finder; drag a file into a terminal |
 
 The UI tests now run in the engine of each platform's app (WebView2/Edge on Windows,
-WKWebView/WebKit on macOS); `MRMAK_TEST_BROWSER=chromium|webkit|msedge` overrides. Several tests
+WKWebView/WebKit on macOS); `IAAR_TEST_BROWSER=chromium|webkit|msedge` overrides. Several tests
 needed engine-aware fixes (platform copy keys, WebKit clipboard permissions, a prototype-level
 microphone stub, server-side "lost reply" simulation because Playwright's WebKit cannot route
 service-worker requests, and two timing races).

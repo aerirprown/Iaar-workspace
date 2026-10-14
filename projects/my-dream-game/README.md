@@ -1,6 +1,6 @@
-# My Dream Game: Mr. Mak 64
+# My Dream Game: Iaar 64
 
-A small third-person platformer set on floating Sky Islands. Mr. Mak is a white
+A small third-person platformer set on floating Sky Islands. Iaar is a white
 piglet with a grey beanie and a brown backpack. The first world is a climb through
 grass islands and a small village, with a secret below the main route.
 
@@ -16,7 +16,7 @@ grass islands and a small village, with a secret below the main route.
 
 The [Workspace hub](../../workspace/2026-09-15_my-dream-game/index.html) contains
 four sections: Intro screen, Character, Locations and Development. Its character
-and level images come from the original Mr. Mak 64 concept exploration. Prompts
+and level images come from the original Iaar 64 concept exploration. Prompts
 are preserved next to those images. Character and Development also include
 camera renders from the existing Bellweather Sky Unity prototype. These document
 the scene's appearance; gameplay was not re-tested for the template, and the

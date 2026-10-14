@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:mrmak:asset-delivery:v1",
+  "$id": "urn:iaar:asset-delivery:v1",
   "title": "Asset delivery file integrity manifest",
   "description": "Records local file identity only. It does not establish visual approval or engine readiness.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "card_id", "step", "files"],
   "properties": {
-    "schema": { "const": "mrmak.asset-delivery/v1" },
+    "schema": { "const": "iaar.asset-delivery/v1" },
     "card_id": { "$ref": "#/$defs/id" },
     "step": { "$ref": "#/$defs/id" },
     "provider": { "$ref": "#/$defs/providerName" },

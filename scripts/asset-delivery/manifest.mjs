@@ -6,8 +6,8 @@ import { readFile, realpath, stat, writeFile } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep, win32 } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-export const PLAN_SCHEMA = 'mrmak.asset-delivery-plan/v1';
-export const MANIFEST_SCHEMA = 'mrmak.asset-delivery/v1';
+export const PLAN_SCHEMA = 'iaar.asset-delivery-plan/v1';
+export const MANIFEST_SCHEMA = 'iaar.asset-delivery/v1';
 
 const ID = /^[a-z0-9][a-z0-9-]{0,62}$/;
 const PROVIDER_NAME = /^[A-Za-z0-9][A-Za-z0-9._/-]{0,99}$/;

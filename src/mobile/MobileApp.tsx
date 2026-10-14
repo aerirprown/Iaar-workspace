@@ -23,15 +23,15 @@ interface ToolActivity { id: string; name: string; status: 'running' | 'complete
 interface Message { id: string; role: 'user' | 'assistant'; text: string; at: string; images?: { url?: string; name: string; unavailable?: boolean; kind?: 'image' | 'video'; type?: string }[] }
 function getPairToken() {
   const token = new URLSearchParams(location.hash.slice(1)).get('pair')
-  if (token) { sessionStorage.setItem('mrmak.mobile.pair', token); history.replaceState(null, '', location.pathname) }
-  return sessionStorage.getItem('mrmak.mobile.pair') || ''
+  if (token) { sessionStorage.setItem('iaar.mobile.pair', token); history.replaceState(null, '', location.pathname) }
+  return sessionStorage.getItem('iaar.mobile.pair') || ''
 }
 function Connect() {
   const state = useMobile()
   const [pairToken, setPairToken] = useState(getPairToken)
   const [name, setName] = useState('My phone'), [busy, setBusy] = useState(false), [error, setError] = useState('')
   const [code, setCode] = useState('')
-  const [pending, setPending] = useState<Pending | null>(() => { try { return JSON.parse(sessionStorage.getItem('mrmak.mobile.pending') || 'null') } catch { return null } })
+  const [pending, setPending] = useState<Pending | null>(() => { try { return JSON.parse(sessionStorage.getItem('iaar.mobile.pending') || 'null') } catch { return null } })
   useEffect(() => {
     if (!pending) return
     let stopped = false, working = false
@@ -41,7 +41,7 @@ function Connect() {
       try {
         const result = await mobileApi<{ status: string }>('/pair/finish', pending)
         if (stopped) return
-        if (result.status === 'connected') { sessionStorage.removeItem('mrmak.mobile.pending'); sessionStorage.removeItem('mrmak.mobile.pair'); setPairToken(''); setPending(null); void startMobile() }
+        if (result.status === 'connected') { sessionStorage.removeItem('iaar.mobile.pending'); sessionStorage.removeItem('iaar.mobile.pair'); setPairToken(''); setPending(null); void startMobile() }
       } catch (err) { if (!stopped) setError(err instanceof Error ? err.message : String(err)) }
       finally { working = false }
     }
@@ -50,14 +50,14 @@ function Connect() {
   }, [pending])
   async function connect(event: React.FormEvent) {
     event.preventDefault(); setBusy(true); setError('')
-    try { const result = await mobileApi<Pending>('/pair', { token: pairToken || code.replace(/\s/g, ''), name }); sessionStorage.setItem('mrmak.mobile.pending', JSON.stringify(result)); setPending(result) }
+    try { const result = await mobileApi<Pending>('/pair', { token: pairToken || code.replace(/\s/g, ''), name }); sessionStorage.setItem('iaar.mobile.pending', JSON.stringify(result)); setPending(result) }
     catch (err) { setError(err instanceof Error ? err.message : String(err)) }
     finally { setBusy(false) }
   }
-  return <main className="mobile-connect"><Nose size={64} /><span className="mobile-eyebrow">YOUR AGENTS, CLOSE AT HAND</span><h1>Mr. Mak<br /><span>on your phone.</span></h1>
-    {pending ? <div className="mobile-connect-card"><Icon name="phone" size={28} /><h2>Confirm on your computer</h2><p>Open the phone button in Mr. Mak Chats. Check this code, then choose Connect phone.</p><code className="mobile-pair-code">{pending.code}</code><span className="mobile-waiting">Waiting for confirmation…</span><button onClick={() => { sessionStorage.removeItem('mrmak.mobile.pending'); setPending(null); setError('Scan a new QR code in Chats to try again.') }}>Cancel</button></div>
+  return <main className="mobile-connect"><Nose size={64} /><span className="mobile-eyebrow">YOUR AGENTS, CLOSE AT HAND</span><h1>Iaar<br /><span>on your phone.</span></h1>
+    {pending ? <div className="mobile-connect-card"><Icon name="phone" size={28} /><h2>Confirm on your computer</h2><p>Open the phone button in Iaar Chats. Check this code, then choose Connect phone.</p><code className="mobile-pair-code">{pending.code}</code><span className="mobile-waiting">Waiting for confirmation…</span><button onClick={() => { sessionStorage.removeItem('iaar.mobile.pending'); setPending(null); setError('Scan a new QR code in Chats to try again.') }}>Cancel</button></div>
     : pairToken ? <form className="mobile-connect-card" onSubmit={connect}><h2>Connect this phone</h2><p>Your agents and files stay on your computer.</p><label>Device name<input autoComplete="off" maxLength={60} value={name} onChange={event => setName(event.target.value)} /></label><button className="mobile-primary" disabled={busy}>{busy ? 'Connecting…' : 'Request connection'}<Icon name="arrow" size={17} /></button></form>
-    : <form className="mobile-connect-card" onSubmit={connect}><h2>Start in Mr. Mak Chats</h2><p>On your computer, press the phone icon. Scan the QR code or enter its connection code below. Keep Tailscale connected on both devices.</p><label>Connection code<input inputMode="numeric" autoComplete="off" maxLength={8} value={code} onChange={event => setCode(event.target.value.replace(/[^0-9]/g, ''))} placeholder="8 digits" /></label><button className="mobile-primary" disabled={busy || code.length !== 8}>Request connection<Icon name="arrow" size={17} /></button><button type="button" onClick={() => void startMobile()}>Check existing connection</button></form>}
+    : <form className="mobile-connect-card" onSubmit={connect}><h2>Start in Iaar Chats</h2><p>On your computer, press the phone icon. Scan the QR code or enter its connection code below. Keep Tailscale connected on both devices.</p><label>Connection code<input inputMode="numeric" autoComplete="off" maxLength={8} value={code} onChange={event => setCode(event.target.value.replace(/[^0-9]/g, ''))} placeholder="8 digits" /></label><button className="mobile-primary" disabled={busy || code.length !== 8}>Request connection<Icon name="arrow" size={17} /></button><button type="button" onClick={() => void startMobile()}>Check existing connection</button></form>}
     {(error || state.error) && <p className="mobile-error" role="alert">{error || state.error}</p>}<p className="mobile-connect-foot">Your conversations. Your computer.<br />A little more room to move.</p>
   </main>
 }
@@ -174,7 +174,7 @@ export default function MobileApp() {
     refreshTimer.current = window.setTimeout(() => { setRefreshing(false); refreshTimer.current = undefined }, 500)
   }
   useEffect(() => {
-    document.title = 'Mr. Mak Mobile'; document.documentElement.dataset.makTheme = 'dark'
+    document.title = 'Iaar Mobile'; document.documentElement.dataset.makTheme = 'dark'
     const manifest = document.createElement('link'); manifest.rel = 'manifest'; manifest.href = '/mobile/manifest.webmanifest'; document.head.append(manifest)
     const icon = document.createElement('link'); icon.rel = 'apple-touch-icon'; icon.href = '/assets/mak-mobile-192.png'; document.head.append(icon)
     const theme = document.createElement('meta'); theme.name = 'theme-color'; theme.content = '#0d0e12'; document.head.append(theme)
@@ -198,7 +198,7 @@ export default function MobileApp() {
     catch (err) { setCloseError(err instanceof Error ? err.message : String(err)) }
     finally { setClosing(false) }
   }
-  if (!state.ready) return <div className="mobile-app mobile-loading"><Nose size={52} /><p>Connecting to Mr. Mak…</p></div>
+  if (!state.ready) return <div className="mobile-app mobile-loading"><Nose size={52} /><p>Connecting to Iaar…</p></div>
   if (!state.authenticated) return <div className="mobile-app"><Connect /></div>
   const items = [...state.sessions].filter(item => (history || item.open) && `${item.name} ${item.agent}`.toLowerCase().includes(query.toLowerCase())).sort((a, b) => Number(b.pinned) - Number(a.pinned) || (history ? b.updatedAt.localeCompare(a.updatedAt) : a.tabOrder - b.tabOrder))
   const title = view === 'chat' && session ? session.name : view === 'results' ? 'Workspace' : history ? 'History' : 'Chats'
@@ -214,11 +214,11 @@ export default function MobileApp() {
     </nav>
     <button className="mobile-icon" aria-label="Phone settings" title="Phone settings" onClick={() => setSettings(!settings)}><Icon name="phone" size={19} /></button>
   </header>
-    {installation.available && !installation.dismissed && <aside className="mobile-install" aria-label="Install Mr. Mak"><div><strong>Keep Mr. Mak on your phone</strong><p>Add the nose to your Home Screen and open it as an app.</p></div><button onClick={() => void installation.install()} disabled={installation.busy}>Install</button><button className="mobile-icon" aria-label="Not now" title="Not now" onClick={installation.dismiss}><Icon name="close" size={17} /></button></aside>}
+    {installation.available && !installation.dismissed && <aside className="mobile-install" aria-label="Install Iaar"><div><strong>Keep Iaar on your phone</strong><p>Add the nose to your Home Screen and open it as an app.</p></div><button onClick={() => void installation.install()} disabled={installation.busy}>Install</button><button className="mobile-icon" aria-label="Not now" title="Not now" onClick={installation.dismiss}><Icon name="close" size={17} /></button></aside>}
     {installation.error && <p className="mobile-error" role="alert">{installation.error}</p>}
     {!state.connected && <div className="mobile-offline" role="status">{state.error || 'Reconnecting… Keep Tailscale connected and your computer awake.'}</div>}
     {closeError && <div className="mobile-error" role="alert">{closeError}<button className="mobile-icon" aria-label="Dismiss close error" onClick={() => setCloseError('')}><Icon name="close" size={15} /></button></div>}
-    {settings && <div className="mobile-device-settings"><strong>{state.device?.name}</strong><p>Chats run on your computer. Switching views here leaves your desktop view alone.</p>{installation.installed ? <p>Mr. Mak is installed on this phone.</p> : installation.available ? <button onClick={() => void installation.install()} disabled={installation.busy}>Install Mr. Mak</button> : <p>To add Mr. Mak to your Home Screen, open your browser’s menu and choose Install app or Add to Home Screen. On iPhone, use Safari’s Share menu.</p>}<ReadingVoiceSettings /><DictationSettings info={state.dictation} onChange={chooseMobileDictation} disabled={!state.connected} /><button onClick={() => { if (window.confirm('Disconnect this phone from Mr. Mak?')) void disconnectMobile() }}>Disconnect this phone</button></div>}
+    {settings && <div className="mobile-device-settings"><strong>{state.device?.name}</strong><p>Chats run on your computer. Switching views here leaves your desktop view alone.</p>{installation.installed ? <p>Iaar is installed on this phone.</p> : installation.available ? <button onClick={() => void installation.install()} disabled={installation.busy}>Install Iaar</button> : <p>To add Iaar to your Home Screen, open your browser’s menu and choose Install app or Add to Home Screen. On iPhone, use Safari’s Share menu.</p>}<ReadingVoiceSettings /><DictationSettings info={state.dictation} onChange={chooseMobileDictation} disabled={!state.connected} /><button onClick={() => { if (window.confirm('Disconnect this phone from Iaar?')) void disconnectMobile() }}>Disconnect this phone</button></div>}
     <div className="mobile-view-host"><div className="mobile-persistent-view" aria-hidden={view !== 'results'} inert={view !== 'results'}><Results header={view === 'results' ? resultsHeader : null} active={view === 'results'} /></div>{session && <div className="mobile-persistent-view" aria-hidden={view !== 'chat'} inert={view !== 'chat'}><Conversation key={session.id} session={session} active={view === 'chat'} /></div>}{view === 'list' && <main className="mobile-chat-list"><label className="mobile-search"><Icon name="search" size={17} /><input aria-label="Find a chat" placeholder="Find a conversation…" value={query} onChange={event => setQuery(event.target.value)} /></label><div className="mobile-chat-cards">{items.map(item => <button className={`mobile-chat-card ${item.activity === 'working' ? 'working' : ''}`} key={item.id} onClick={() => open(item.id)} style={{ '--chat-color': item.tabColor || state.agents.find(agent => agent.id === item.agent)?.color || '#d7aabd' } as React.CSSProperties}><span className="mobile-agent-icon"><AgentLogo agent={item.agent} size={24} />{item.unread && <i />}</span><span className="mobile-card-copy"><strong>{item.name}{item.pinned && <Icon name="pin" size={12} />}</strong><small>{state.agents.find(agent => agent.id === item.agent)?.label || item.agent} · {chatActivityLabel(item)}</small>{item.preview && <p>{item.preview}</p>}</span><Icon name="arrow" size={15} /></button>)}{!items.length && <p className="mobile-list-empty">{query ? 'No matching chats.' : 'Open a chat to give your next idea a place.'}</p>}</div><p className="mobile-list-foot">A thought on your phone.<br />A task on your computer.</p></main>}</div>
     {creating && <NewChat close={() => setCreating(false)} opened={open} />}
   </div>

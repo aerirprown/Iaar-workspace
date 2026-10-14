@@ -31,7 +31,7 @@ const server = http.createServer(async (req, res) => {
   let raw = ''; for await (const chunk of req) raw += chunk;
   const data = raw ? JSON.parse(raw) : {};
   requests.push(data);
-  const answer = 'MRMAK_LOOPBACK_ANSWER';
+  const answer = 'IAAR_LOOPBACK_ANSWER';
   if (data.stream) {
     res.writeHead(200, { 'Content-Type': 'text/event-stream' });
     const chunk = (delta, finish_reason = null) => ({ id: 'chatcmpl_fixture', object: 'chat.completion.chunk', created: 1, model: 'local', choices: [{ index: 0, delta, finish_reason }] });
@@ -69,9 +69,9 @@ async function run(chatId, nativeId, prompt) {
   assert.equal(code, 0, `CLI failed (${version}). Logs: ${repo}\n${output.slice(-2000)}`);
   const state = await readOpencodeState(repo, chatId);
   assert.ok(state?.nativeId && state.completion, `Observer must record the real session and completed turn. Logs: ${repo}`);
-  assert.equal(state.launchId, childEnv.MRMAK_OPENCODE_LAUNCH_ID);
+  assert.equal(state.launchId, childEnv.IAAR_OPENCODE_LAUNCH_ID);
   assert.equal(state.activity, 'idle');
-  assert.ok(output.includes('MRMAK_LOOPBACK_ANSWER'));
+  assert.ok(output.includes('IAAR_LOOPBACK_ANSWER'));
   return state;
 }
 try {

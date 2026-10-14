@@ -17,7 +17,7 @@ test('platform policy preserves POSIX names while retaining Windows-safe validat
 });
 
 test('OpenCode install directory is included in command lookup roots', async () => {
-  const home = await mkdtemp(path.join(os.tmpdir(), 'mrmak-command-home-'));
+  const home = await mkdtemp(path.join(os.tmpdir(), 'iaar-command-home-'));
   const bin = path.join(home, '.opencode', 'bin');
   await mkdir(bin, { recursive: true });
   const executable = path.join(bin, 'opencode');

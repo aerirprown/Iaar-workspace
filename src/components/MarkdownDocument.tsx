@@ -22,7 +22,7 @@ export function MarkdownView({ text, baseUrl }: { text: string; baseUrl?: string
 }
 
 export default function MarkdownDocument({ file }: { file: Preview }) {
-  const draftKey = `mrmak.md-draft.${file.path}`
+  const draftKey = `iaar.md-draft.${file.path}`
   const [saved, setSaved] = useState(file.text || '')
   const [draft, setDraft] = useState(() => restoreDraft(draftKey, file.text || ''))
   const [revision, setRevision] = useState(file.revision)

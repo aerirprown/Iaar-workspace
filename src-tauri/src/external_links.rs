@@ -85,7 +85,7 @@ mod tests {
         use std::{io::{Read, Write}, net::TcpListener, time::{Duration, Instant}};
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         listener.set_nonblocking(true).unwrap();
-        let url = tauri::Url::parse(&format!("http://{}/mrmak-browser-check?from=chat&check=links", listener.local_addr().unwrap())).unwrap();
+        let url = tauri::Url::parse(&format!("http://{}/iaar-browser-check?from=chat&check=links", listener.local_addr().unwrap())).unwrap();
         open_browser(&url).unwrap();
         let deadline = Instant::now() + Duration::from_secs(20);
         loop {
@@ -93,8 +93,8 @@ mod tests {
                 stream.set_read_timeout(Some(Duration::from_secs(5))).unwrap();
                 let mut request = [0; 4096];
                 let count = stream.read(&mut request).unwrap();
-                assert!(String::from_utf8_lossy(&request[..count]).contains("GET /mrmak-browser-check?from=chat&check=links "));
-                let body = "<!doctype html><html lang='en'><meta charset='utf-8'><title>Mr. Mak browser check</title><body style='background:#101115;color:#eee;font:20px system-ui;padding:48px'><h1>Browser links work.</h1><p>Mr. Mak opened your default browser. You can close this test tab.</p></body></html>";
+                assert!(String::from_utf8_lossy(&request[..count]).contains("GET /iaar-browser-check?from=chat&check=links "));
+                let body = "<!doctype html><html lang='en'><meta charset='utf-8'><title>Iaar browser check</title><body style='background:#101115;color:#eee;font:20px system-ui;padding:48px'><h1>Browser links work.</h1><p>Iaar opened your default browser. You can close this test tab.</p></body></html>";
                 write!(stream, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}", body.len(), body).unwrap();
                 break;
             }

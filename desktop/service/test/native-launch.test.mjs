@@ -9,7 +9,7 @@ import { wrapCommand } from '../agents.mjs';
 import { shellCommand } from '../platform.mjs';
 
 test('Windows native executables receive literal arguments without a PowerShell wrapper', { skip: process.platform !== 'win32', timeout: 15000 }, async () => {
-  const folder = await mkdtemp(path.join(os.tmpdir(), "mrmak owner's launch-"));
+  const folder = await mkdtemp(path.join(os.tmpdir(), "iaar owner's launch-"));
   const exe = path.join(folder, 'agent fixture.exe');
   const script = path.join(folder, 'record arguments.mjs');
   const output = path.join(folder, 'arguments.json');

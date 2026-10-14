@@ -8,7 +8,7 @@ import { McpInventory } from '../mcp.mjs';
 import { childEnvironment } from '../agents.mjs';
 
 async function fixture(options = {}) {
-  const base = await mkdtemp(path.join(os.tmpdir(), 'mrmak-mcp-test-'));
+  const base = await mkdtemp(path.join(os.tmpdir(), 'iaar-mcp-test-'));
   const repo = path.join(base, 'project'), home = path.join(base, 'home');
   for (const root of [repo, home]) for (const dir of ['.claude', '.codex', '.kimi-code', '.cursor']) await mkdir(path.join(root, dir), { recursive: true });
   const json = (file, value) => writeFile(file, JSON.stringify(value));
@@ -46,8 +46,8 @@ test('Antigravity MCP definitions show project precedence and redact remote URLs
 test('MCP discovery distinguishes declared disabled plugins, missing programs, keys and project approval', async () => {
   const { repo, home, json, inventory } = await fixture();
   await json(path.join(repo, '.mcp.json'), { mcpServers: {
-    key: { url: 'https://example.test', headers: { Authorization: '${MRMAK_MCP_TEST_KEY:-}' } },
-    absent: { command: 'missing-mrmak-fixture-executable' },
+    key: { url: 'https://example.test', headers: { Authorization: '${IAAR_MCP_TEST_KEY:-}' } },
+    absent: { command: 'missing-iaar-fixture-executable' },
     approval: { url: 'https://example.test/mcp' },
   } });
   await writeFile(path.join(home, '.codex/config.toml'), '[plugins."example@fixture"]\nenabled=false\n');
@@ -109,10 +109,10 @@ test('checks are invalidated when credentials change and disabled servers cannot
   let probes=0;
   const { repo, json, inventory } = await fixture({probe:async()=>{probes++;return{status:'available',toolCount:0}}});
   await json(path.join(repo, '.claude/settings.local.json'), { enabledMcpjsonServers: ['fixture'] });
-  await json(path.join(repo,'.mcp.json'), {mcpServers:{fixture:{url:'https://example.test',headers:{Authorization:'${MRMAK_MCP_TEST_KEY:-}'}}}});
-  await writeFile(path.join(repo,'.env'),'MRMAK_MCP_TEST_KEY=first-private-key\n');
+  await json(path.join(repo,'.mcp.json'), {mcpServers:{fixture:{url:'https://example.test',headers:{Authorization:'${IAAR_MCP_TEST_KEY:-}'}}}});
+  await writeFile(path.join(repo,'.env'),'IAAR_MCP_TEST_KEY=first-private-key\n');
   await inventory.check('claude:fixture'); assert.equal((await inventory.list()).servers[0].connection.status,'available');
-  await writeFile(path.join(repo,'.env'),'MRMAK_MCP_TEST_KEY=second-private-key\n');
+  await writeFile(path.join(repo,'.env'),'IAAR_MCP_TEST_KEY=second-private-key\n');
   assert.equal((await inventory.list()).servers[0].connection,null);
   await json(path.join(repo,'.mcp.json'), {mcpServers:{fixture:{url:'https://example.test',disabled:true}}});
   await assert.rejects(inventory.check('claude:fixture')); assert.equal(probes,1);
@@ -137,8 +137,8 @@ test('project MCP checks require approval, and withdrawing approval invalidates 
 
 test('agent environment forwards only explicitly scoped MCP values from the project env', async () => {
   const { repo } = await fixture();
-  await writeFile(path.join(repo,'.env'),'MRMAK_MCP_FIXTURE_VALUE=mcp-value\nOPENAI_KEY=private-voice-key\nUNRELATED_FIXTURE_KEY=private-value\n');
+  await writeFile(path.join(repo,'.env'),'IAAR_MCP_FIXTURE_VALUE=mcp-value\nOPENAI_KEY=private-voice-key\nUNRELATED_FIXTURE_KEY=private-value\n');
   const env=childEnvironment(repo);
-  assert.equal(env.MRMAK_MCP_FIXTURE_VALUE,'mcp-value');
+  assert.equal(env.IAAR_MCP_FIXTURE_VALUE,'mcp-value');
   assert.notEqual(env.OPENAI_KEY,'private-voice-key'); assert.notEqual(env.UNRELATED_FIXTURE_KEY,'private-value');
 });

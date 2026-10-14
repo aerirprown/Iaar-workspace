@@ -9,14 +9,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 test('startup replaces old diagnostics without persisting window credentials', { timeout: 20000 }, async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-runtime-test-'));
-  const state = path.join(repo, '.mrmak');
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-runtime-test-'));
+  const state = path.join(repo, '.iaar');
   await mkdir(state);
   await mkdir(path.join(repo, 'workspace'));
   await writeFile(path.join(repo, 'workspace/workspace.json'), '{"entities":[]}');
   await writeFile(path.join(state, 'runtime.json'), JSON.stringify({ token: 'old-test-token', urls: { workspace: '?token=old-test-token' } }));
   const env = { ...process.env };
-  delete env.MRMAK_PARENT_PID;
+  delete env.IAAR_PARENT_PID;
   const child = spawn(process.execPath, [fileURLToPath(new URL('../main.mjs', import.meta.url)), '--repo', repo, '--state', state], {
     env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true,
   });

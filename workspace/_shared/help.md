@@ -1,4 +1,4 @@
-# Welcome to Mr. Mak Workspace
+# Welcome to Iaar Workspace
 
 Work with your agents in Chats. Read, compare and keep their results in Workspace.
 Your project folders connect the two. You can use the Workspace without reading
@@ -8,7 +8,7 @@ source code or moving every conversation into one agent's app.
 
 Claude Code and Codex chats use the real installed CLI with its existing login.
 An eligible Claude Pro/Max or ChatGPT subscription can be used without adding an
-API key to Mr. Mak. Normal plan limits apply. Only the optional voice connection
+API key to Iaar. Normal plan limits apply. Only the optional voice connection
 requires an OpenAI API key; optional generation services use their own accounts.
 
 OpenCode is available in **+ > OpenCode** after installation. Configure its models
@@ -16,6 +16,10 @@ and providers in OpenCode; their authentication and billing rules apply. History
 and pinned tabs keep its native conversation ID. Keep one conversation per tab.
 OpenCode connections are managed in its own MCP controls, separately from the
 Workspace MCP inspector.
+
+Cursor is available in **+ > Cursor** after the [Cursor CLI](https://cursor.com/docs/cli/overview)
+is installed. Sign in with your Cursor account in the terminal. A new tab creates
+a Cursor chat so History can resume it. Phone pairing and voice are not required.
 
 ## Start with one task
 
@@ -86,11 +90,11 @@ complete modules into your project, and install only their required dependencies
 Use your own provider accounts and keys. A skill does not include someone else's
 subscription, running terminal, API balance or signed-in application.
 
-## Talking to Mr. Mak
+## Talking to Iaar
 
 Press the nose button to start or stop a voice conversation. Ask for quick actions
 such as opening a chat, finding a card, checking recent work or changing a card's
-status. For a larger task, ask Mr. Mak to create an agent conversation and follow
+status. For a larger task, ask Iaar to create an agent conversation and follow
 its result. You can continue working directly in any terminal.
 
 Voice uses the configured API connection. Terminal agents use their own installed
@@ -107,7 +111,7 @@ The current choices are visible in Settings and in the agent or provider setup.
 | Ctrl+V in a chat | Paste text or a clipboard screenshot |
 | Ctrl+S while editing Markdown | Save the document |
 | Escape in an image preview | Close the enlarged image |
-| Optional Win-key recall | Bring back open Mr. Mak windows; configurable in Settings |
+| Optional Win-key recall | Bring back open Iaar windows; configurable in Settings |
 | Ctrl+Esc | Open Windows Start |
 
 Settings also contains terminal text size and appearance, the default agent,

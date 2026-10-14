@@ -81,7 +81,7 @@ test('OpenCode configuration keeps provider, model, plugin and permission choice
     const actual = JSON.parse(result.OPENCODE_CONFIG_CONTENT);
     assert.deepEqual(actual, { ...config, [key]: ['existing-plugin', new URL(major === 2 ? '../opencode/v2/' : '../opencode/v1.mjs', import.meta.url).href] });
     assert.equal(result.PROVIDER_SENTINEL, 'untouched');
-    assert.equal(result.MRMAK_OPENCODE_SESSION_ID, id);
+    assert.equal(result.IAAR_OPENCODE_SESSION_ID, id);
     assert.deepEqual(JSON.parse(env.OPENCODE_CONFIG_CONTENT), config, 'caller env is not mutated');
   }
   for (const bad of ['{broken', '[]', 'null', '{"plugin":false}']) {

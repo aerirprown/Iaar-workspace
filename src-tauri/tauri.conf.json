@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Mr. Mak Workspace",
+  "productName": "Iaar Workspace",
   "version": "0.5.1",
-  "identifier": "com.mrmak.workspace",
+  "identifier": "com.iaar.workspace",
   "build": {
     "beforeBuildCommand": "npm run desktop:prepare",
     "frontendDist": "../desktop/splash"

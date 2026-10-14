@@ -3,8 +3,8 @@ import { api, isDesktop, useDesktop } from '../desktop/client'
 
 export type WorkspaceTheme = 'dark' | 'light' | 'system'
 export type ResolvedTheme = 'dark' | 'light'
-const storageKey = 'mrmak.workspaceTheme'
-const changed = 'mrmak-workspace-theme'
+const storageKey = 'iaar.workspaceTheme'
+const changed = 'iaar-workspace-theme'
 const system = window.matchMedia('(prefers-color-scheme: dark)')
 const valid = (value: unknown): WorkspaceTheme => value === 'light' || value === 'system' ? value : 'dark'
 const readPreference = () => { try { return valid(localStorage.getItem(storageKey)) } catch { return 'dark' as const } }

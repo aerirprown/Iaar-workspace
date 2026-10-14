@@ -56,7 +56,7 @@ jobs:
       - name: Upload Linux AppImage
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: mr-mak-workspace-linux-appimage
+          name: iaar-workspace-linux-appimage
           path: src-tauri/target/release/bundle/appimage/*.AppImage
           if-no-files-found: error
           retention-days: 14
@@ -89,14 +89,14 @@ jobs:
       - run: node desktop/service/test/desktop-dictation-ui.mjs
       - run: python3 scripts/test-local-voice-setup.py
       - name: Verify packaged Node and native terminals
-        run: '"src-tauri/target/release/bundle/macos/Mr. Mak Workspace.app/Contents/Resources/runtime/node" scripts/check-bundled-runtime.mjs'
+        run: '"src-tauri/target/release/bundle/macos/Iaar Workspace.app/Contents/Resources/runtime/node" scripts/check-bundled-runtime.mjs'
       - name: Archive macOS app with executable permissions
         run: |
-          ditto -c -k --sequesterRsrc --keepParent "src-tauri/target/release/bundle/macos/Mr. Mak Workspace.app" mr-mak-workspace-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent "src-tauri/target/release/bundle/macos/Iaar Workspace.app" iaar-workspace-macos.zip
       - name: Upload macOS app
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: mr-mak-workspace-macos-app
-          path: mr-mak-workspace-macos.zip
+          name: iaar-workspace-macos-app
+          path: iaar-workspace-macos.zip
           if-no-files-found: error
           retention-days: 14

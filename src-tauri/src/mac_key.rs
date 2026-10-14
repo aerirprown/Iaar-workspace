@@ -1,5 +1,5 @@
 //! macOS counterpart of the Win-key recall: a global ⌃⌥Space shortcut brings
-//! back the open Mr. Mak windows. Only this one chord is registered; no other
+//! back the open Iaar windows. Only this one chord is registered; no other
 //! key input is observed.
 use std::sync::atomic::{AtomicBool, Ordering};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};

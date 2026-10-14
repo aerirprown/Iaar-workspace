@@ -58,12 +58,12 @@ export function createObserver({ directory, nativeId, chatId, launchId, startedA
 }
 
 export function observerFromEnvironment(directory) {
-  const file = process.env.MRMAK_OPENCODE_STATE;
-  if (!file || !path.isAbsolute(file) || !process.env.MRMAK_OPENCODE_CHAT_ID || !process.env.MRMAK_OPENCODE_LAUNCH_ID) return () => {};
+  const file = process.env.IAAR_OPENCODE_STATE;
+  if (!file || !path.isAbsolute(file) || !process.env.IAAR_OPENCODE_CHAT_ID || !process.env.IAAR_OPENCODE_LAUNCH_ID) return () => {};
   return createObserver({
-    directory, nativeId: process.env.MRMAK_OPENCODE_SESSION_ID,
-    chatId: process.env.MRMAK_OPENCODE_CHAT_ID, launchId: process.env.MRMAK_OPENCODE_LAUNCH_ID,
-    startedAt: Number(process.env.MRMAK_OPENCODE_STARTED_AT) || Date.now(),
+    directory, nativeId: process.env.IAAR_OPENCODE_SESSION_ID,
+    chatId: process.env.IAAR_OPENCODE_CHAT_ID, launchId: process.env.IAAR_OPENCODE_LAUNCH_ID,
+    startedAt: Number(process.env.IAAR_OPENCODE_STARTED_AT) || Date.now(),
     save(state) {
       try {
         writeFileSync(file + '.tmp', JSON.stringify(state), { mode: 0o600 });

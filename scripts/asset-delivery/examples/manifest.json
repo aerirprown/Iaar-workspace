@@ -1,5 +1,5 @@
 {
-  "schema": "mrmak.asset-delivery/v1",
+  "schema": "iaar.asset-delivery/v1",
   "card_id": "my-dream-game",
   "step": "concept-study",
   "provider": "local-example",

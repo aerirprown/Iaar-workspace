@@ -5,9 +5,9 @@ const params = new URLSearchParams(window.location.search)
 export const isDesktop = params.get('desktop') === '1'
 export const surface = params.get('surface') === 'chats' ? 'chats' : 'workspace'
 export const clientId = crypto.randomUUID()
-let token = params.get('token') || sessionStorage.getItem('mrmak.token') || ''
+let token = params.get('token') || sessionStorage.getItem('iaar.token') || ''
 if (isDesktop && token) {
-  sessionStorage.setItem('mrmak.token', token)
+  sessionStorage.setItem('iaar.token', token)
   params.delete('token')
   history.replaceState(null, '', `${location.pathname}?${params}${location.hash}`)
 }
@@ -43,14 +43,14 @@ export async function api<T>(path: string, data?: unknown, method?: string, opti
 export function pickFiles(): Promise<string[]> {
   const requestId = crypto.randomUUID()
   return new Promise((resolve, reject) => {
-    const cleanup = () => { window.removeEventListener('mrmak-picked-files', picked); window.removeEventListener('pagehide', closed) }
+    const cleanup = () => { window.removeEventListener('iaar-picked-files', picked); window.removeEventListener('pagehide', closed) }
     const picked = (event: Event) => {
       const detail = (event as CustomEvent<{ requestId: string; paths: string[] }>).detail
       if (detail?.requestId !== requestId) return
       cleanup(); resolve(detail.paths)
     }
     const closed = () => { cleanup(); reject(new Error('The file picker window was closed.')) }
-    window.addEventListener('mrmak-picked-files', picked)
+    window.addEventListener('iaar-picked-files', picked)
     window.addEventListener('pagehide', closed)
     api('/files/pick', { requestId }).catch(error => { cleanup(); reject(error) })
   })
@@ -75,7 +75,7 @@ export function sendEvent(value: unknown) {
 }
 export function selectChat(id: string) {
   update({ selectedId: id }); sendEvent({ type: 'selected', id })
-  localStorage.setItem('mrmak.selectedChat', id)
+  localStorage.setItem('iaar.selectedChat', id)
 }
 export const windowAction = (window: 'workspace' | 'chats', action = 'show', value?: boolean) => api('/window', { window, action, value }).catch(reportError)
 
@@ -84,7 +84,7 @@ export async function startDesktop() {
   started = true
   try {
     const initial = await api<DesktopState>('/bootstrap')
-    const selected = localStorage.getItem('mrmak.selectedChat')
+    const selected = localStorage.getItem('iaar.selectedChat')
     if (surface === 'workspace' && !location.hash && initial.settings.workspaceRoute?.startsWith('#/')) history.replaceState(null, '', location.pathname + location.search + initial.settings.workspaceRoute)
     update({ ...initial, ready: true, error: null, selectedId: initial.sessions.some(item => item.id === selected) ? selected : initial.selectedId })
     connect()
@@ -121,7 +121,7 @@ function connect() {
         if (event.preview) setPreview(event.preview)
       }
     }
-    if (event.type === 'workspace-changed') window.dispatchEvent(new Event('mrmak-workspace-changed'))
+    if (event.type === 'workspace-changed') window.dispatchEvent(new Event('iaar-workspace-changed'))
     events.forEach(listener => listener(event))
   }
   socket.onclose = () => {

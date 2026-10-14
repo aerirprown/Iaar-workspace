@@ -1,8 +1,8 @@
-# Mr. Mak Workspace
+# Iaar Workspace
 
 Your CLI agents, a visual Workspace, and access from your phone.
 
-Mr. Mak has **two connected desktop windows**:
+Iaar has **two connected desktop windows**:
 
 - **Chats** is where you give tasks to Codex, Claude Code, Antigravity, OpenCode or Kimi. Each
   conversation runs in a real CLI terminal, with its own tab and saved history.
@@ -16,7 +16,7 @@ leave Chats in view while working in Blender, a game engine or your browser.
 **New in 0.5: [connect your phone](#on-your-phone)** to follow the same chats,
 send ideas and dictate messages while the agents keep working on your computer.
 
-![The two Mr. Mak windows side by side: CLI chats on the left and the My Dream Game project in Workspace on the right](docs/assets/desktop-chats-workspace.png)
+![The two Iaar windows side by side: CLI chats on the left and the My Dream Game project in Workspace on the right](docs/assets/desktop-chats-workspace.png)
 
 *Chats on the left, Workspace on the right. App views arranged side by side
 with sample conversations and the included My Dream Game project.*
@@ -24,11 +24,11 @@ with sample conversations and the included My Dream Game project.*
 ## On your phone
 
 Read replies, send follow-ups or images, and open Workspace reports from a mobile
-web app you can add to your Home Screen. The phone connects to Mr. Mak on your
+web app you can add to your Home Screen. The phone connects to Iaar on your
 computer through **Tailscale**. Your agents keep running on the computer with
 their existing CLI accounts.
 
-<a href="docs/assets/mobile-overview.png"><img src="docs/assets/mobile-overview.png" alt="Mr. Mak on a phone: chat list, conversation and voice input side by side" width="720"></a>
+<a href="docs/assets/mobile-overview.png"><img src="docs/assets/mobile-overview.png" alt="Iaar on a phone: chat list, conversation and voice input side by side" width="720"></a>
 
 *Your chats, a conversation, and voice input in one overview. Tap the image
 to see it at full size. Sample conversations shown.*
@@ -42,7 +42,7 @@ to see it at full size. Sample conversations shown.*
 - **Review the result.** Enlarge shared images, play videos, or reopen a report
   at its saved position. Optional local voices can read a reply aloud.
 
-Keep the computer awake with Mr. Mak running, and Tailscale connected on both
+Keep the computer awake with Iaar running, and Tailscale connected on both
 devices. Dictation can run locally with Whisper after the optional Python setup,
 or use separately billed OpenRouter/OpenAI API credit. Updates keep your current
 provider. Local dictation and Read aloud require no transcription API key;
@@ -78,18 +78,19 @@ the optional Live voice coordinator still uses OpenAI API billing.
 
 ## Before you start
 
-**Prerequisite: install and configure Codex CLI, Claude Code CLI, Antigravity, OpenCode or Kimi
-before setting up Mr. Mak.** You need at least one. They can run side by side
-and are separate installations, not bundled with Mr. Mak.
+**Prerequisite: install and configure Codex CLI, Claude Code CLI, Antigravity, OpenCode, Kimi or Cursor
+before setting up Iaar.** You need at least one. They can run side by side
+and are separate installations, not bundled with Iaar.
 
 - [Install Codex CLI](https://developers.openai.com/codex/cli)
 - [Install Claude Code CLI](https://code.claude.com/docs/en/setup)
 - [Install OpenCode](https://opencode.ai/docs/)
 - [Install Antigravity CLI](https://www.antigravity.google/docs/cli/install/)
 - [Install Kimi Code CLI](https://moonshotai.github.io/kimi-cli/)
+- [Install Cursor CLI](https://cursor.com/docs/cli/overview)
 
 **Do I need an API key?** No, not for Claude Code or Codex chats when you sign
-in with an eligible subscription. Mr. Mak runs the real CLI with its existing
+in with an eligible subscription. Iaar runs the real CLI with its existing
 login: Claude Pro/Max can use Claude Code, and Codex can use ChatGPT subscription
 access. Normal plan limits still apply. API billing is an alternative, not a
 requirement. See [Claude authentication](https://code.claude.com/docs/en/authentication)
@@ -98,6 +99,12 @@ and [Codex authentication](https://developers.openai.com/codex/auth).
 **OpenCode** uses the providers and authentication you configure in OpenCode.
 Their access and billing rules still apply; support here does not turn a Claude
 Code subscription into OpenCode API access. Choose **+ > OpenCode** in Chats.
+
+**Cursor** runs the `cursor-agent` CLI in a chat tab. Install it from the
+[official guide](https://cursor.com/docs/cli/overview), then choose **+ > Cursor**
+and sign in with your Cursor account. On Windows the installer is
+`irm 'https://cursor.com/install?win32=true' | iex`. History resumes the chat
+created for that tab. Phone pairing and the voice coordinator are not required.
 
 **Antigravity** runs Google's `agy` CLI in a chat tab. Install it from the
 [official guide](https://www.antigravity.google/docs/cli/install/), then choose
@@ -116,7 +123,7 @@ Use **Use this template** on GitHub to create your own repository, then clone it
 into a folder you control. Open that folder in your installed Codex CLI,
 Claude Code CLI or OpenCode and paste:
 
-> Set up this Mr. Mak Workspace repository on my computer. Read AGENTS.md and
+> Set up this Iaar Workspace repository on my computer. Read AGENTS.md and
 > docs/getting-started.md, check the prerequisites, and help me run the Windows
 > desktop app. Use my own CLI accounts. Leave optional voice, paid providers,
 > MCP connections and the Win-key shortcut off until I choose to connect them.
@@ -129,17 +136,17 @@ your own agent accounts and any services you want to use.
 ## Run the desktop app
 
 On Windows, download the installer from [Releases](https://github.com/witnesstodark/mr-mak-workspace/releases/latest),
-install **Mr. Mak Workspace**, then open **Start Mr. Mak.cmd** in your cloned
+install **Iaar Workspace**, then open **Start Iaar.cmd** in your cloned
 repository. On Linux, build the Tauri desktop target after installing the Node,
 Rust and WebKitGTK prerequisites, then launch the resulting AppImage/deb install
-with `--repo /path/to/your/workspace`. On macOS, run `./setup.sh desktop` to build `Mr. Mak Workspace.app`, then open
-**Start Mr. Mak.command** ([macOS notes](docs/getting-started.md#macos)). On every system, use **+** in Chats to
+with `--repo /path/to/your/workspace`. On macOS, run `./setup.sh desktop` to build `Iaar Workspace.app`, then open
+**Start Iaar.command** ([macOS notes](docs/getting-started.md#macos)). On every system, use **+** in Chats to
 open an installed CLI and sign in with your own account.
 
 The installer includes the local Node service. It does not include Codex,
 Claude Code, Antigravity, OpenCode, Kimi, Blender, Python or provider accounts.
 
-**Already using Mr. Mak?** Read the [0.5.1 update notes](CHANGELOG.md) for
+**Already using Iaar?** Read the [0.5.1 update notes](CHANGELOG.md) for
 Antigravity, macOS improvements, mobile navigation, local voice options and
 release security changes.
 Follow the
@@ -165,7 +172,7 @@ See [getting started](docs/getting-started.md) for the complete setup and
 
 | Example | What it demonstrates |
 | --- | --- |
-| **My Dream Game** | Mr. Mak 64: an illustrated game hub with an intro screen, character studies, locations and a development board. |
+| **My Dream Game** | Iaar 64: an illustrated game hub with an intro screen, character studies, locations and a development board. |
 | **Creative MCP Connections** | A researched connection shortlist, source links and a practical setup checklist. |
 | **Make Workspace Yours** | Getting started, everyday use and changes you can ask an agent to make. |
 | **Arachne Character Lab** | Versions 1 through 9, expandable saved prompts, 158 images and eight motion studies. |
@@ -173,7 +180,7 @@ See [getting started](docs/getting-started.md) for the complete setup and
 The examples stay visible until you archive them. Create your own cards next to
 them, or archive all four when you are ready.
 
-![Inside My Dream Game: the included Mr. Mak 64 project](docs/assets/workspace.png)
+![Inside My Dream Game: the included Iaar 64 project](docs/assets/workspace.png)
 
 Terminal text settings let you adjust readability. In agent chats, Ctrl+C copies
 selected text; PowerShell keeps normal shell behavior.
@@ -210,7 +217,7 @@ You can work entirely through the CLI chats. The floating nose adds an optional
 voice assistant: OpenAI Live supplies the voice connection over API, and the
 coordinator uses your signed-in Codex CLI. Voice API usage is billed separately
 from a CLI subscription. The coordinator uses your Codex model configuration
-unless you set `MRMAK_COORDINATOR_MODEL` in `.env`.
+unless you set `IAAR_COORDINATOR_MODEL` in `.env`.
 
 fal.ai, Higgsfield and other providers are optional and use your own accounts.
 MCP configuration starts empty. The MCP panel explains where connections are
@@ -235,6 +242,6 @@ is supplied for learning and remixing; see [third-party notices](THIRD_PARTY_NOT
 
 ---
 
-Mr. Mak is small.
+Iaar is small.
 
-<img src="docs/assets/mr-mak.png" alt="Mr. Mak, a small plush pig wearing a black hat" width="420">
+<img src="docs/assets/iaar.png" alt="Iaar, a small plush pig wearing a black hat" width="420">

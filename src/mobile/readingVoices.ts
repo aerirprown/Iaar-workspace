@@ -1,6 +1,6 @@
 export const readingVoices = [{ id: 'am_michael', label: 'Michael · US man' }, { id: 'bf_emma', label: 'Emma · UK woman' }]
-export const readingVoiceKey = 'mrmak.mobile.read-aloud.voice'
-export const readingVoiceChanged = 'mrmak-reading-voice-changed'
+export const readingVoiceKey = 'iaar.mobile.read-aloud.voice'
+export const readingVoiceChanged = 'iaar-reading-voice-changed'
 let currentVoice = 'am_michael'
 export function savedReadingVoice() {
   let value = currentVoice

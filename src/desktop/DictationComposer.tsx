@@ -10,6 +10,6 @@ export default function DictationComposer({ id, connected, running }: { id: stri
     if (voiceIds.current.has(recordingId)) return
     await api(`/sessions/${id}/input`, { text, paste: true, submit: false })
     voiceIds.current.add(recordingId)
-    window.dispatchEvent(new CustomEvent('mrmak-dictation-inserted', { detail: { id } }))
+    window.dispatchEvent(new CustomEvent('iaar-dictation-inserted', { detail: { id } }))
   }} /></div>
 }

@@ -9,18 +9,18 @@ import {reportThemeCSS} from './report-theme.mjs';
 function preludeFor({theme = 'dark', parentOrigin = ''} = {}) {
   theme = theme === 'light' ? 'light' : 'dark';
   const trustedOrigin = JSON.stringify(parentOrigin).replace(/</g, '\\u003c');
-  return Buffer.from(`<meta name="color-scheme" content="${theme}"><style data-mrmak-chrome>
+  return Buffer.from(`<meta name="color-scheme" content="${theme}"><style data-iaar-chrome>
 html{color-scheme:dark;background-color:#101115;color:#d3d0d9}
 html,body,body *{scrollbar-color:#514c59 #111217!important;scrollbar-width:thin}
 ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:#111217!important}
 ::-webkit-scrollbar-thumb{background:#514c59!important;border:2px solid #111217;border-radius:6px}
 ${reportThemeCSS}
-</style><script data-mrmak-links>
+</style><script data-iaar-links>
 (() => {
-  const setTheme = theme => { if (theme === 'dark' || theme === 'light') document.documentElement.dataset.mrmakTheme = theme; };
+  const setTheme = theme => { if (theme === 'dark' || theme === 'light') document.documentElement.dataset.iaarTheme = theme; };
   setTheme('${theme}');
   window.addEventListener('message', event => {
-    if (event.source === parent && event.origin === ${trustedOrigin} && event.data?.type === 'mrmak:theme') setTheme(event.data.theme);
+    if (event.source === parent && event.origin === ${trustedOrigin} && event.data?.type === 'iaar:theme') setTheme(event.data.theme);
   });
   const route = event => {
     const link = event.target.closest?.('a[href]');
@@ -63,7 +63,7 @@ export function reportChromeStream(options) {
 }
 
 export async function serveReport(request, response, file, info, headers, reportOptions = {}) {
-  const options = {theme: new URL(request.url, 'http://localhost').searchParams.get('mrmak-theme'), parentOrigin: headers['Access-Control-Allow-Origin'] || '', ...reportOptions};
+  const options = {theme: new URL(request.url, 'http://localhost').searchParams.get('iaar-theme'), parentOrigin: headers['Access-Control-Allow-Origin'] || '', ...reportOptions};
   const prelude = options?.mobileState ? mobileReportStatePrelude(options.parentOrigin) : preludeFor(options);
   response.writeHead(200, {'Content-Type':'text/html; charset=utf-8', 'Content-Length':info.size + prelude.length, 'Cache-Control':'no-cache', 'X-Content-Type-Options':'nosniff', ...headers});
   if (request.method === 'HEAD') { response.end(); return; }

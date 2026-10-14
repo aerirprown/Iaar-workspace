@@ -6,7 +6,7 @@ const runtime = path.dirname(process.execPath);
 const require = createRequire(path.join(runtime, 'service/package.json'));
 const pty = require('node-pty');
 const command = process.platform === 'win32' ? process.env.ComSpec : '/bin/sh';
-const args = process.platform === 'win32' ? ['/c', 'echo mrmak-pty-ready'] : ['-c', 'printf mrmak-pty-ready'];
+const args = process.platform === 'win32' ? ['/c', 'echo iaar-pty-ready'] : ['-c', 'printf iaar-pty-ready'];
 await new Promise((resolve, reject) => {
   const child = pty.spawn(command, args, { cwd: runtime, env: process.env });
   let output = '';
@@ -14,7 +14,7 @@ await new Promise((resolve, reject) => {
   child.onData(data => { output += data; });
   child.onExit(({ exitCode }) => {
     clearTimeout(timer);
-    try { assert.equal(exitCode, 0); assert.match(output, /mrmak-pty-ready/); resolve(); } catch (error) { reject(error); }
+    try { assert.equal(exitCode, 0); assert.match(output, /iaar-pty-ready/); resolve(); } catch (error) { reject(error); }
   });
 });
 console.log(`Packaged Node ${process.version} and native PTY launch passed.`);

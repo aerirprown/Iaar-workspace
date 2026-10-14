@@ -7,9 +7,9 @@ import { createInterface } from 'node:readline';
 const directory = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const option = name => { const index = args.indexOf(name); return index < 0 ? null : args[index + 1]; };
-const repo = path.resolve(option('--repo') || process.env.MRMAK_REPO || path.join(directory, '../..'));
+const repo = path.resolve(option('--repo') || process.env.IAAR_REPO || path.join(directory, '../..'));
 const uiDir = path.resolve(option('--ui') || path.join(directory, '../../dist'));
-const stateDir = path.resolve(option('--state') || path.join(repo, '.mrmak'));
+const stateDir = path.resolve(option('--state') || path.join(repo, '.iaar'));
 const writeNative = value => process.stdout.write(JSON.stringify(value) + '\n');
 const service = await createService({ repo, uiDir, stateDir, native: writeNative, restoreSessions: true });
 // Diagnostics are readable project state. Window credentials travel only over
@@ -23,8 +23,8 @@ async function stop() {
   await service.close(); process.exit(0);
 }
 process.on('SIGINT', stop); process.on('SIGTERM', stop);
-if (process.env.MRMAK_PARENT_PID) {
-  const parent = Number(process.env.MRMAK_PARENT_PID);
+if (process.env.IAAR_PARENT_PID) {
+  const parent = Number(process.env.IAAR_PARENT_PID);
   const timer = setInterval(() => { try { process.kill(parent, 0); } catch { stop(); } }, 2000); timer.unref();
 }
 createInterface({ input: process.stdin }).on('line', line => {

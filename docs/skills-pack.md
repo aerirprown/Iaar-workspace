@@ -1,7 +1,7 @@
-# Mr. Mak agent skills
+# Iaar agent skills
 
 This pack contains 20 project-local workflows for Codex CLI and Claude Code.
-You can use them in a game or creative project without installing Mr. Mak's
+You can use them in a game or creative project without installing Iaar's
 desktop app. Sign in to at least one of those CLIs first.
 
 Read `docs/skills.md` for the complete index. The six new game workflows cover
@@ -53,4 +53,4 @@ private projects, original game assets, conversations, credentials or job receip
 The pack does not change global agent settings.
 
 The application and sample projects are available separately at
-[Mr. Mak Workspace](https://github.com/witnesstodark/mr-mak-workspace).
+[Iaar Workspace](https://github.com/witnesstodark/mr-mak-workspace).

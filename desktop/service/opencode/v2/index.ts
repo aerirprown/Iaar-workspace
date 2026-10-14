@@ -3,7 +3,7 @@ import { observerFromEnvironment } from '../observer.mjs';
 // Plugin.define is an identity helper; a plain definition avoids installing any
 // extra packages in the user's project. OpenCode v2 owns the plugin lifecycle.
 export default {
-  id: 'mrmak-session-observer',
+  id: 'iaar-session-observer',
   setup(context) {
     const observe = observerFromEnvironment(context.location.directory);
     const controller = new AbortController();

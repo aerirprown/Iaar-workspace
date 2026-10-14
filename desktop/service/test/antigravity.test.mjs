@@ -16,7 +16,7 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function until(check) { for (let i = 0; i < 160; i++) { if (await check()) return; await pause(50); } throw new Error('Antigravity fixture timed out'); }
 
 test('Antigravity is discoverable before the app refreshes PATH', async () => {
-  const home = await mkdtemp(path.join(os.tmpdir(), 'mrmak-agy-lookup-'));
+  const home = await mkdtemp(path.join(os.tmpdir(), 'iaar-agy-lookup-'));
   const local = path.join(home, 'Local AppData');
   const bin = process.platform === 'win32' ? path.join(local, 'agy/bin') : path.join(home, '.local/bin');
   await mkdir(bin, { recursive: true });
@@ -27,7 +27,7 @@ test('Antigravity is discoverable before the app refreshes PATH', async () => {
 });
 
 test('Antigravity command preserves permissions, explicit effort and an exact conversation target', async () => {
-  const bin = await mkdtemp(path.join(os.tmpdir(), 'mrmak-agy-command-'));
+  const bin = await mkdtemp(path.join(os.tmpdir(), 'iaar-agy-command-'));
   await writeFile(path.join(bin, process.platform === 'win32' ? 'agy.cmd' : 'agy'), '');
   const previous = process.env.PATH;
   process.env.PATH = bin;
@@ -57,7 +57,7 @@ test('Native ID discovery ignores echoed UUIDs, partial records and unrelated me
 });
 
 test('Two same-folder chats recover separate native IDs after restart, including a log larger than the read window', async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-agy-history-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-agy-history-'));
   let sessions = await new Sessions(repo, path.join(repo, 'state')).init();
   const first = sessions.make({ id: randomUUID(), agent: 'antigravity', cwd: repo, open: false, hasConversation: false });
   const second = sessions.make({ id: randomUUID(), agent: 'antigravity', cwd: repo, open: false, hasConversation: false });
@@ -82,7 +82,7 @@ test('Two same-folder chats recover separate native IDs after restart, including
 });
 
 test('Log watcher discovers new and switched conversations and stops after disposal', async () => {
-  const stateDir = await mkdtemp(path.join(os.tmpdir(), 'mrmak-agy-watch-'));
+  const stateDir = await mkdtemp(path.join(os.tmpdir(), 'iaar-agy-watch-'));
   const chatId = randomUUID();
   const file = await prepareAntigravityLog(stateDir, chatId);
   const ids = [];
@@ -97,7 +97,7 @@ test('Log watcher discovers new and switched conversations and stops after dispo
 });
 
 test('Login Enter does not invent a conversation, while missing known history never silently becomes a new chat', async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-agy-onboarding-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-agy-onboarding-'));
   const sessions = await new Sessions(repo, repo).init();
   const item = sessions.make({ id: randomUUID(), agent: 'antigravity', cwd: repo, open: true, hasConversation: false });
   sessions.items.set(item.id, item);
@@ -115,7 +115,7 @@ test('Login Enter does not invent a conversation, while missing known history ne
 });
 
 test('Real PTY create and resume execute Antigravity flags and retain distinct chats', { timeout: 30000 }, async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-agy-pty-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-agy-pty-'));
   const bin = path.join(repo, 'bin'); await mkdir(bin);
   const fake = path.join(bin, 'fake.mjs');
   const trace = path.join(repo, 'launches.jsonl');

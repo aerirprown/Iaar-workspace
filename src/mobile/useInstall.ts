@@ -9,7 +9,7 @@ const installedDisplay = () => window.matchMedia('(display-mode: standalone)').m
 export function useInstall() {
   const prompt = useRef<InstallPrompt | null>(null)
   const [available, setAvailable] = useState(false), [installed, setInstalled] = useState(installedDisplay)
-  const [dismissed, setDismissed] = useState(() => sessionStorage.getItem('mrmak.mobile.install-dismissed') === 'true')
+  const [dismissed, setDismissed] = useState(() => sessionStorage.getItem('iaar.mobile.install-dismissed') === 'true')
   const [busy, setBusy] = useState(false), [error, setError] = useState('')
   useEffect(() => {
     const display = window.matchMedia('(display-mode: standalone)')
@@ -25,7 +25,7 @@ export function useInstall() {
     display.addEventListener('change', syncDisplay)
     return () => { window.removeEventListener('beforeinstallprompt', ready); window.removeEventListener('appinstalled', complete); display.removeEventListener('change', syncDisplay) }
   }, [])
-  function dismiss() { setDismissed(true); sessionStorage.setItem('mrmak.mobile.install-dismissed', 'true') }
+  function dismiss() { setDismissed(true); sessionStorage.setItem('iaar.mobile.install-dismissed', 'true') }
   async function install() {
     const event = prompt.current
     if (!event || busy || installed) return

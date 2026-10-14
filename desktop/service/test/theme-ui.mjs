@@ -41,7 +41,7 @@ try {
   await expect(second.locator('.content')).toHaveCSS('background-color', 'rgb(247, 248, 250)');
   await expect(second.locator('.entity-card')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(chats.locator('html')).toHaveAttribute('data-workspace-theme', 'dark');
-  await expect(report().locator('html')).toHaveAttribute('data-mrmak-theme', 'light');
+  await expect(report().locator('html')).toHaveAttribute('data-iaar-theme', 'light');
   assert.equal(await report().locator('body').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(255, 255, 255)');
   assert.equal(await report().locator('h1').evaluate(node => getComputedStyle(node).color), 'rgb(17, 21, 33)');
   assert.equal(await report().locator('html').evaluate(() => window.mountId), mountId);
@@ -49,8 +49,8 @@ try {
   assert.equal(await report().getByRole('textbox', { name: 'Keep my draft' }).inputValue(), 'Keep this edit');
   assert.equal(await report().getByRole('img', { name: 'Artwork' }).evaluate(node => getComputedStyle(node).filter), 'none');
   // Untrusted siblings and invalid values cannot change the report's theme.
-  await report().locator('html').evaluate(() => window.dispatchEvent(new MessageEvent('message', { source: window, origin: location.origin, data: { type: 'mrmak:theme', theme: 'dark' } })));
-  await expect(report().locator('html')).toHaveAttribute('data-mrmak-theme', 'light');
+  await report().locator('html').evaluate(() => window.dispatchEvent(new MessageEvent('message', { source: window, origin: location.origin, data: { type: 'iaar:theme', theme: 'dark' } })));
+  await expect(report().locator('html')).toHaveAttribute('data-iaar-theme', 'light');
   const saved = await (await fetch(service.origin + '/api/settings', { method: 'POST', headers: { Authorization: `Bearer ${service.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ workspaceTheme: 'invalid' }) })).json();
   assert.equal(saved.workspaceTheme, 'light');
   await page.getByRole('button', { name: 'Close settings', exact: true }).click();

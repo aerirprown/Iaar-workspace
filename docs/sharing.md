@@ -4,7 +4,7 @@ Start from this template's clean history. Add only the examples and instructions
 you mean to publish. An empty MCP configuration does not hide a token pasted into
 a report, so review the actual files you are sharing.
 
-Keep `.env`, `.mrmak`, agent login files, global configuration, raw generation
+Keep `.env`, `.iaar`, agent login files, global configuration, raw generation
 receipts and private inbox materials local. The supplied `.gitignore` covers
 common runtime paths. It cannot recognize private text you put in an ordinary
 Markdown file.

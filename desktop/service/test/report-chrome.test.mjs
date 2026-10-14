@@ -12,26 +12,26 @@ async function rendered(chunks) {
   for await(const chunk of Readable.from(chunks).pipe(reportChromeStream()))result.push(chunk);
   return Buffer.concat(result).toString('utf8');
 }
-const original = output => output.replace(/<meta name="color-scheme" content="dark"><style data-mrmak-chrome>[\s\S]*?<\/style><script data-mrmak-links>[\s\S]*?<\/script>/,'');
+const original = output => output.replace(/<meta name="color-scheme" content="dark"><style data-iaar-chrome>[\s\S]*?<\/style><script data-iaar-links>[\s\S]*?<\/script>/,'');
 test('report chrome precedes document styles and preserves Unicode and original content across chunks', async()=>{
   const source='\uFEFF<!doctype html><html lang="en"><head><meta charset="utf-8"><style>body{background:#ddd}</style></head><body>Пример 🐽<pre>const head = "&lt;head&gt;";</pre></body></html>';
   const bytes=Buffer.from(source);
   const output=await rendered(Array.from(bytes,byte=>Buffer.from([byte])));
   assert.equal(original(output),source);
-  assert.ok(output.indexOf('data-mrmak-chrome') < output.indexOf('body{background:#ddd}'));
+  assert.ok(output.indexOf('data-iaar-chrome') < output.indexOf('body{background:#ddd}'));
   assert.ok(output.startsWith('\uFEFF<!doctype html>'));
   assert.match(output,/scrollbar-color:#514c59 #111217/);
 });
 test('unstyled fragments and large reports retain their content and receive one chrome layer',async()=>{
   for(const source of ['<h1>A plain report</h1>', '<!doctype html><h1>No explicit head</h1>', '<!doctype html><!--'+'x'.repeat(70000)+'--><html><body>Large report</body></html>']){
     const output=await rendered([Buffer.from(source.slice(0,65000)),Buffer.from(source.slice(65000))]);
-    assert.equal(original(output),source); assert.equal(output.split('data-mrmak-chrome').length,2);
+    assert.equal(original(output),source); assert.equal(output.split('data-iaar-chrome').length,2);
     if(source.startsWith('<!doctype'))assert.ok(output.startsWith('<!doctype html>'));
   }
 });
 
 test('HTML GET and HEAD agree on byte length while ranges remain full transformed documents',async()=>{
-  const dir=await mkdtemp(path.join(os.tmpdir(),'mrmak-report-'));
+  const dir=await mkdtemp(path.join(os.tmpdir(),'iaar-report-'));
   const file=path.join(dir,'report.html'),source='<!doctype html><html><head></head><body>Пример 🐽</body></html>';
   await writeFile(file,source); const info=await stat(file);
   const server=http.createServer((request,response)=>{void serveReport(request,response,file,info,{});});
@@ -53,10 +53,10 @@ test('mobile state bridge preserves report bytes and is absent from desktop defa
   const source = '<!doctype html><html><head></head><body>Mobile reader</body></html>', result = [];
   for await (const chunk of Readable.from([Buffer.from(source)]).pipe(reportChromeStream({ mobileState: true, parentOrigin: 'https://phone.example' }))) result.push(chunk);
   const html = Buffer.concat(result).toString();
-  assert.equal(html.replace(/<script data-mrmak-mobile-state>[\s\S]*?<\/script>/, ''), source);
+  assert.equal(html.replace(/<script data-iaar-mobile-state>[\s\S]*?<\/script>/, ''), source);
   assert.match(html, /event.source !== parent \|\| event.origin !== target/);
-  assert.doesNotMatch(html, /data-mrmak-chrome|allow-same-origin/);
+  assert.doesNotMatch(html, /data-iaar-chrome|allow-same-origin/);
   const desktop = [];
   for await (const chunk of Readable.from([Buffer.from(source)]).pipe(reportChromeStream())) desktop.push(chunk);
-  assert.doesNotMatch(Buffer.concat(desktop).toString(), /mrmak:report-state/);
+  assert.doesNotMatch(Buffer.concat(desktop).toString(), /iaar:report-state/);
 });

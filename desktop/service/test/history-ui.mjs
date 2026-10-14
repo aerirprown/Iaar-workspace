@@ -16,12 +16,12 @@ const ids = ['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-22
 const chats = ids.map((nativeId, i) => ({ id: `history-${i}`, name: `Saved conversation ${i + 1}`, agent: i === 2 ? 'opencode' : 'codex', cwd: repo, nativeId: null, hasConversation: true, open: false, pinned: i === 0, tabOrder: i, createdAt: '2026-01-01T20:00:00Z', status: 'stopped', cols: 80, rows: 24 }));
 await mkdir(path.join(repo, 'workspace'));
 await writeFile(path.join(repo, 'workspace/workspace.json'), '{"entities":[]}');
-await mkdir(path.join(repo, '.mrmak'));
-await writeFile(path.join(repo, '.mrmak/sessions.json'), JSON.stringify(chats));
+await mkdir(path.join(repo, '.iaar'));
+await writeFile(path.join(repo, '.iaar/sessions.json'), JSON.stringify(chats));
 const folder = path.join(process.env.CODEX_HOME, 'sessions/2026/01/02');
 await mkdir(folder, { recursive: true });
-for (const [i, chat] of chats.entries()) if (chat.agent === 'codex') await writeFile(path.join(folder, `rollout-test-${ids[i]}.jsonl`), JSON.stringify({ type: 'session_meta', payload: { id: ids[i], cwd: repo, source: 'cli', originator: `mrmak_chat_${chat.id}`, instructions: 'x'.repeat(48000) } }) + '\n');
-await writeFile(path.join(repo, '.mrmak/opencode-history-2.json'), JSON.stringify({ chatId: 'history-2', nativeId: ids[2], launchId: 'previous-launch', revision: 1, activity: 'idle' }));
+for (const [i, chat] of chats.entries()) if (chat.agent === 'codex') await writeFile(path.join(folder, `rollout-test-${ids[i]}.jsonl`), JSON.stringify({ type: 'session_meta', payload: { id: ids[i], cwd: repo, source: 'cli', originator: `iaar_chat_${chat.id}`, instructions: 'x'.repeat(48000) } }) + '\n');
+await writeFile(path.join(repo, '.iaar/opencode-history-2.json'), JSON.stringify({ chatId: 'history-2', nativeId: ids[2], launchId: 'previous-launch', revision: 1, activity: 'idle' }));
 let service, browser;
 const launches = [];
 async function start() {
@@ -59,7 +59,7 @@ try {
   await page.locator('.history-open').filter({ hasText: chats[1].name }).click();
   await page.locator('.xterm-rows').filter({ hasText: ids[1] }).waitFor();
   await service.sessions.persist();
-  const saved = JSON.parse(await readFile(path.join(repo, '.mrmak/sessions.json'), 'utf8'));
+  const saved = JSON.parse(await readFile(path.join(repo, '.iaar/sessions.json'), 'utf8'));
   assert.deepEqual(saved.map(s => s.nativeId), ids);
   await service.close();
   await start(); await service.sessions.restore();

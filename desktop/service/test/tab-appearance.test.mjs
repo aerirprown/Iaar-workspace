@@ -14,7 +14,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 async function fixture() {
   await mkdir(path.join(root, '.cache'), { recursive: true });
   const repo = await mkdtemp(path.join(root, '.cache', 'tab-appearance-'));
-  const sessions = await new Sessions(repo, path.join(repo, '.mrmak')).init();
+  const sessions = await new Sessions(repo, path.join(repo, '.iaar')).init();
   for (const [id, pinned, open] of [['pin-a', true, true], ['pin-b', true, true], ['first', false, true], ['saved', false, false], ['last', false, true]]) {
     sessions.items.set(id, sessions.make({ id, name: id, agent: 'codex', pinned, open, status: 'stopped', createdAt: '2026-09-12', cols: 80, rows: 25 }));
   }
@@ -56,7 +56,7 @@ test('order and tab colors persist after restart without changing native chat id
     assert.throws(() => sessions.color('first', 'url(https://example.com)'), /valid tab color/);
     assert.throws(() => sessions.color('first', '#123'), /valid tab color/);
     await sessions.close();
-    reopened = await new Sessions(repo, path.join(repo, '.mrmak')).init();
+    reopened = await new Sessions(repo, path.join(repo, '.iaar')).init();
     assert.deepEqual(reopened.active().map(x => x.id), ['pin-b', 'pin-a', 'last', 'first']);
     assert.equal(reopened.get('first').tabColor, '#91b6da');
     assert.equal(reopened.get('first').nativeId, '00000000-0000-0000-0000-000000000001');

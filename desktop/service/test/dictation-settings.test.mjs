@@ -8,19 +8,19 @@ import { MobileDictation } from '../mobile-dictation.mjs';
 
 test('upgrade preserves effective dictation provider and model, fresh setups stay local across restarts', async () => {
   const cases = [
-    { saved: {}, env: { OPENAI_API_KEY: 'test-key', MRMAK_TRANSCRIBE_MODEL: 'chosen-model' }, provider: 'openai', model: 'chosen-model' },
+    { saved: {}, env: { OPENAI_API_KEY: 'test-key', IAAR_TRANSCRIBE_MODEL: 'chosen-model' }, provider: 'openai', model: 'chosen-model' },
     { saved: {}, env: { OPENAI_API_KEY: 'test-key', OPENROUTER_API_KEY: 'test-router' }, provider: 'openrouter' },
-    { saved: {}, env: { OPENAI_API_KEY: 'test-key', MRMAK_TRANSCRIBE_PROVIDER: 'off' }, provider: 'off' },
-    { saved: { transcribeProvider: 'local' }, env: { OPENAI_API_KEY: 'test-key', MRMAK_TRANSCRIBE_PROVIDER: 'openai' }, provider: 'local' },
+    { saved: {}, env: { OPENAI_API_KEY: 'test-key', IAAR_TRANSCRIBE_PROVIDER: 'off' }, provider: 'off' },
+    { saved: { transcribeProvider: 'local' }, env: { OPENAI_API_KEY: 'test-key', IAAR_TRANSCRIBE_PROVIDER: 'openai' }, provider: 'local' },
     { saved: {}, env: {}, provider: 'off' },
     { env: { OPENAI_API_KEY: 'test-key', OPENROUTER_API_KEY: 'test-router' }, provider: 'local' },
-    { env: { MRMAK_TRANSCRIBE_PROVIDER: 'openai', OPENAI_API_KEY: 'test-key' }, provider: 'openai' },
+    { env: { IAAR_TRANSCRIBE_PROVIDER: 'openai', OPENAI_API_KEY: 'test-key' }, provider: 'openai' },
   ];
   for (const fixture of cases) {
-    const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-dictation-upgrade-'));
-    await mkdir(path.join(repo, 'workspace')); await mkdir(path.join(repo, 'ui')); await mkdir(path.join(repo, '.mrmak'));
+    const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-dictation-upgrade-'));
+    await mkdir(path.join(repo, 'workspace')); await mkdir(path.join(repo, 'ui')); await mkdir(path.join(repo, '.iaar'));
     await writeFile(path.join(repo, 'workspace/workspace.json'), '{"entities":[]}');
-    if (fixture.saved) await writeFile(path.join(repo, '.mrmak/settings.json'), JSON.stringify({ terminalAppearance: 'focus', ...fixture.saved }));
+    if (fixture.saved) await writeFile(path.join(repo, '.iaar/settings.json'), JSON.stringify({ terminalAppearance: 'focus', ...fixture.saved }));
     let calls = 0;
     for (let restart = 0; restart < 2; restart++) {
       const dictation = new MobileDictation(repo, { env: fixture.env, localStatus: async () => false, fetcher: () => { calls++; throw Error('No automatic cloud fallback'); } });
@@ -30,7 +30,7 @@ test('upgrade preserves effective dictation provider and model, fresh setups sta
         assert.equal(info.provider, fixture.provider);
         if (fixture.model) assert.equal(info.model, fixture.model);
         if (fixture.provider === 'local') assert.equal((await dictation.status()).available, false);
-        const saved = JSON.parse(await readFile(path.join(repo, '.mrmak/settings.json')));
+        const saved = JSON.parse(await readFile(path.join(repo, '.iaar/settings.json')));
         assert.equal(saved.transcribeProvider, fixture.provider);
         if (fixture.saved) assert.equal(saved.terminalAppearance, 'focus');
       } finally { await service.close(); }
@@ -40,7 +40,7 @@ test('upgrade preserves effective dictation provider and model, fresh setups sta
 });
 
 test('paired phone and desktop share persisted dictation choice, reject untrusted changes and expose no keys', async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-dictation-settings-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-dictation-settings-'));
   await mkdir(path.join(repo, 'workspace')); await mkdir(path.join(repo, 'ui'));
   await writeFile(path.join(repo, 'workspace/workspace.json'), '{"entities":[]}');
   const options = () => ({ repo, uiDir: path.join(repo, 'ui'), mcpOptions: { home: repo, env: {} }, mobileOptions: {

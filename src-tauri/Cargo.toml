@@ -1,8 +1,8 @@
 [package]
-name = "mrmak-workspace"
+name = "iaar-workspace"
 version = "0.5.1"
-description = "Mr. Mak workspace and independent agent terminals"
-authors = ["Mr. Mak Workspace contributors"]
+description = "Iaar workspace and independent agent terminals"
+authors = ["Iaar Workspace contributors"]
 edition = "2021"
 rust-version = "1.77.2"
 

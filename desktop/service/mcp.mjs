@@ -21,7 +21,7 @@ const merge = (base, next) => {
 };
 const expand = (text, env, missing) => String(text).replace(/\$\{([A-Za-z_][A-Za-z_0-9]*)(?::-([^}]*))?\}/g, (_, name, fallback) => {
   if (env[name] != null && env[name] !== '') return env[name];
-  if (fallback != null) { if (!fallback && name.startsWith('MRMAK_MCP_')) missing.add(name); return fallback; }
+  if (fallback != null) { if (!fallback && name.startsWith('IAAR_MCP_')) missing.add(name); return fallback; }
   missing.add(name); return '';
 });
 const transform = (value, env, missing) => typeof value === 'string' ? expand(value, env, missing) : Array.isArray(value) ? value.map(item => transform(item, env, missing)) : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [k, transform(v, env, missing)])) : value;
@@ -161,7 +161,7 @@ export class McpInventory {
   }
   async list() { return (await this.scan()).public; }
   async check(id) {
-    if (this.closed) throw new Error('Mr. Mak is closing.');
+    if (this.closed) throw new Error('Iaar is closing.');
     if (this.pending.has(id)) return this.pending.get(id).promise;
     if (this.pending.size >= 2) throw new Error('Two connection checks are running. Wait for one to finish.');
     const entry = (await this.scan()).raw.get(id);
@@ -181,7 +181,7 @@ export class McpInventory {
 }
 
 async function probeServer(entry, signal) {
-  const client = new Client({ name: 'mrmak-connection-check', version: '0.1.0' }, { capabilities: {} });
+  const client = new Client({ name: 'iaar-connection-check', version: '0.1.0' }, { capabilities: {} });
   let closing = false;
   const options = { requestInit: { headers: entry.headers, redirect: 'error' }, fetch: (url, init) => fetch(url, { ...init, redirect: 'error', signal: closing ? AbortSignal.timeout(1500) : signal }) };
   let transport;

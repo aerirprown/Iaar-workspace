@@ -9,13 +9,13 @@ const execute = promisify(execFile);
 const worker = fileURLToPath(new URL('./whisper-dictation.py', import.meta.url));
 export function localConfig(repo, env = {}) {
   const root = path.join(repo, '.cache', 'dictation');
-  return { python: env.MRMAK_WHISPER_PYTHON || path.join(root, 'venv', process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'), model: env.MRMAK_WHISPER_MODEL || path.join(root, 'model') };
+  return { python: env.IAAR_WHISPER_PYTHON || path.join(root, 'venv', process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'), model: env.IAAR_WHISPER_MODEL || path.join(root, 'model') };
 }
 export async function localAvailable(config) {
   try { await Promise.all([access(config.python), access(path.join(config.model, 'model.bin'))]); return true; } catch { return false; }
 }
 export async function localTranscribe(config, audio, extension, signal) {
-  const folder = await mkdtemp(path.join(os.tmpdir(), 'mrmak-whisper-'));
+  const folder = await mkdtemp(path.join(os.tmpdir(), 'iaar-whisper-'));
   try {
     const file = path.join(folder, `recording.${extension}`);
     await writeFile(file, audio, { mode: 0o600 });

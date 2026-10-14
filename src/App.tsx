@@ -14,7 +14,7 @@ const Compare3D = lazy(() => import('./components/Compare3D'))
 const ReportViewer = lazy(() => import('./components/ReportViewer'))
 
 // Freshly-touched work always burns at the top: sort by `updated` (falls back
-// to `created`), regardless of status — a report Mak just edited must not sink
+// to `created`), regardless of status — a report Iaar just edited must not sink
 // under long-lived "active" entities. Status only breaks ties.
 const lastTouched = (e: WorkspaceEntity) => e.updated ?? e.created
 const statusRank = (e: WorkspaceEntity) => (e.status === 'active' ? 0 : 1)
@@ -71,7 +71,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = entity ? `Mr. Mak — ${entity.title}` : 'Mr. Mak — Workspace'
+    document.title = entity ? `Iaar — ${entity.title}` : 'Iaar — Workspace'
   }, [entity])
 
   const goHome = useCallback(() => {
@@ -146,7 +146,7 @@ export default function App() {
       <button
         className="sidebar-reopen"
         onClick={() => setCollapsed(false)}
-        title="Show menu — press Mr. Mak's nose ( [ )"
+        title="Show menu — press Iaar's nose ( [ )"
         aria-label="Show menu"
       >
         <MakLogo size={38} animated={route.id !== 'my-dream-game'} />

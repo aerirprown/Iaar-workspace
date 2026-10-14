@@ -89,7 +89,7 @@ export class Files {
       if (path.extname(actual).toLowerCase() !== '.md') throw new Error('Only Markdown files can be edited.');
       const original = await readFile(actual);
       if (createHash('sha256').update(original).digest('hex') !== revision) throw Object.assign(new Error('This file changed on disk. Your draft is kept. Reopen the file to compare before saving.'), { status: 409 });
-      const backupFolder = path.join(this.repo, '.mrmak', 'markdown-backups');
+      const backupFolder = path.join(this.repo, '.iaar', 'markdown-backups');
       await mkdir(backupFolder, { recursive: true });
       const id = `${Date.now()}-${randomUUID()}`;
       await writeFile(path.join(backupFolder, `${id}.md`), original, { flag: 'wx' });

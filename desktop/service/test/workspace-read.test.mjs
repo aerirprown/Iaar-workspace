@@ -37,7 +37,7 @@ test('three megabytes of unclosed opening tags are handled in linear time', () =
 });
 
 test('reading a report with many unclosed generic tags does not stall', async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-report-read-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-report-read-'));
   await mkdir(path.join(repo, 'workspace'));
   await writeFile(path.join(repo, 'workspace/workspace.json'), JSON.stringify({ entities: [{ id: 'malformed', title: 'Malformed report', folder: '.', steps: [{ name: 'Report', path: 'malformed.html' }] }] }));
   await writeFile(path.join(repo, 'workspace/malformed.html'), 'Before ' + '<unclosed '.repeat(280000));

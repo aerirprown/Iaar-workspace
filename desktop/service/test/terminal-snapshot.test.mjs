@@ -49,7 +49,7 @@ test('mouse encoding follows resets, parameter order and pixel mode without pars
 });
 
 test('saved session screens retain the fullscreen mouse protocol after service reload', async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-snapshot-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-snapshot-'));
   const state = path.join(repo, 'state');
   let sessions = await new Sessions(repo, state).init();
   try {

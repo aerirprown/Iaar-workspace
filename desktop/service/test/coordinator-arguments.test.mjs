@@ -18,7 +18,7 @@ test('conversation IDs cannot be read as command-line options', () => {
   assert.equal(nativeConversationId(''), undefined);
   for (const id of ['--dangerously-skip-permissions', '-c', 'id --yolo', "id'; calc", '../../other', 'a'.repeat(129), 7, {}]) {
     assert.throws(() => nativeConversationId(id));
-    for (const agent of ['codex', 'claude', 'antigravity', 'opencode', 'kimi']) {
+    for (const agent of ['codex', 'claude', 'antigravity', 'opencode', 'kimi', 'cursor']) {
       assert.throws(() => terminalCommand(agent, { resumeId: id }), /conversation ID/);
       assert.throws(() => terminalCommand(agent, { nativeId: id }), /conversation ID/);
     }
@@ -26,7 +26,7 @@ test('conversation IDs cannot be read as command-line options', () => {
 });
 
 test('the coordinator cannot start a shell or pass a resume ID, and invalid IDs are refused by the API', async () => {
-  const repo = await mkdtemp(path.join(os.tmpdir(), 'mrmak-coordinator-arguments-'));
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'iaar-coordinator-arguments-'));
   await mkdir(path.join(repo, 'workspace'));
   await writeFile(path.join(repo, 'workspace/workspace.json'), '{"entities":[]}');
   const service = await createService({ repo, uiDir: repo, mcpOptions: { home: repo, env: {} } });
