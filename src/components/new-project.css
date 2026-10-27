@@ -34,3 +34,13 @@
 .add-tab-button { flex-shrink: 0; width: 28px; height: 28px; margin: 0; }
 .step-tabs-group { display: flex; flex: 1; align-items: center; gap: 6px; min-width: 0; }
 .app-layout .topbar .step-tabs-group > .step-tabs { flex: 0 1 auto; }
+.entity-menu.edit-tabs-dialog { width: min(420px, calc(100vw - 24px)); }
+.edit-tabs-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.edit-tabs-list li { display: flex; gap: 4px; align-items: center; }
+.edit-tabs-list input { flex: 1; min-width: 0; }
+.edit-tabs-list button { flex-shrink: 0; width: 30px; height: 34px; padding: 0; border: 1px solid var(--hairline-strong); border-radius: 8px; background: transparent; color: var(--text-dim); font: inherit; cursor: pointer; }
+.edit-tabs-list button:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+.edit-tabs-list button:disabled { opacity: .35; cursor: default; }
+.edit-tabs-list .edit-tabs-remove:hover:not(:disabled) { color: var(--red); border-color: var(--red); }
+.edit-tabs-dialog .entity-delete-confirm { margin-top: 14px; }
+@media (pointer: coarse) { .edit-tabs-list button { width: 40px; height: 44px; } }

@@ -152,6 +152,46 @@ export class Workspace {
       }
     });
   }
+  // Renames, reorders and removes tabs. `tabs` lists the kept tabs in their new
+  // order by original index; `count` is the number of tabs the editor started
+  // from, so a change made meanwhile by an agent is never overwritten. Files of
+  // removed tabs inside the card's folder are returned for the Recycle Bin.
+  editTabs(id, value) {
+    return this.#serialize(async () => {
+      const tabs = Array.isArray(value?.tabs) ? value.tabs : null;
+      if (!tabs || !tabs.length) throw invalid('A project needs at least one tab. Delete the project instead.');
+      const edits = tabs.map(tab => ({ index: tab?.index, name: typeof tab?.name === 'string' ? tab.name.trim().replace(/\s+/g, ' ') : '' }));
+      if (edits.some(tab => !tab.name || tab.name.length > 60)) throw invalid('Use tab names of 1 to 60 characters.');
+      let removed = [], entity;
+      const card = await this.#commit(registry => {
+        entity = registry.entities.find(item => item.id === id);
+        if (!entity) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+        const steps = entity.steps || [];
+        if (value.count !== steps.length) throw Object.assign(new Error('The tabs changed while you were editing. Close and try again.'), { status: 409 });
+        if (edits.some(tab => !Number.isInteger(tab.index) || tab.index < 0 || tab.index >= steps.length) || new Set(edits.map(tab => tab.index)).size !== edits.length) throw invalid('The tab list does not match this project.');
+        const kept = new Set(edits.map(tab => tab.index));
+        removed = steps.filter((_, index) => !kept.has(index));
+        entity.steps = edits.map(tab => ({ ...steps[tab.index], name: tab.name }));
+        // Keep the default tab when it moves; cards without one keep opening the latest.
+        if (entity.defaultStep !== undefined) entity.defaultStep = Math.max(0, edits.findIndex(tab => tab.index === entity.defaultStep));
+        entity.updated = localDay();
+        return entity;
+      });
+      // Recycle only real files in the card's own folder that no kept tab still uses.
+      const root = await realpath(path.join(this.repo, 'workspace'));
+      const folder = await realpath(path.resolve(root, entity.folder || '.')).catch(() => null);
+      const inUse = new Set(entity.steps.map(step => String(step.path).split('?')[0]));
+      const recycle = [];
+      for (const step of removed) {
+        const relative = String(step.path || '').split('?')[0];
+        if (!folder || folder === root || !relative || inUse.has(relative)) continue;
+        const file = path.resolve(folder, relative);
+        const actual = await lstat(file).then(item => item.isFile() ? realpath(file) : null, () => null);
+        if (actual && within(folder, actual) && actual !== folder) recycle.push(actual);
+      }
+      return { ...card, recycle: [...new Set(recycle)] };
+    });
+  }
   // Unregisters a card and returns its folder for the Recycle Bin. A folder
   // that is shared, the Workspace root or outside it stays where it is.
   remove(id) {

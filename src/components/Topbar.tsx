@@ -3,7 +3,7 @@ import { isDesktop } from '../desktop/client'
 import BrowserSettings from './BrowserSettings'
 import { EntityStatusButton } from './EntityControls'
 import NewProjectButton from './NewProject'
-import AddTabButton from './AddTab'
+import AddTabButton, { EditTabsButton } from './AddTab'
 
 interface TopbarProps {
   entity: WorkspaceEntity | null
@@ -51,6 +51,7 @@ export default function Topbar({ entity, stepIndex, onStep, onHome, reportUrl }:
             </div>
           )}
           <AddTabButton entity={entity} />
+          <EditTabsButton entity={entity} stepIndex={stepIndex} />
           </div>
           {reportUrl && (
             <a

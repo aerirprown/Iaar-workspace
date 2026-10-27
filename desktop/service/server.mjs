@@ -214,6 +214,11 @@ export async function createService({ repo, uiDir, stateDir, token = secret(), n
         if (method === 'POST' && url.pathname === '/api/workspace/entities') return json(response, 201, await workspace.create(projectInput(data)));
         const cardTabs = url.pathname.match(/^\/api\/workspace\/entities\/([^/]+)\/tabs$/);
         if (method === 'POST' && cardTabs) return json(response, 201, await workspace.addTab(decodeURIComponent(cardTabs[1]), data));
+        if (method === 'PUT' && cardTabs) {
+          const card = await workspace.editTabs(decodeURIComponent(cardTabs[1]), data);
+          for (const file of card.recycle) native({ type: 'recycle-file', path: file });
+          return json(response, 200, card);
+        }
         if (method === 'DELETE' && cardMetadata) {
           const card = await workspace.remove(decodeURIComponent(cardMetadata[1]));
           if (card.folder) native({ type: 'recycle-file', path: card.folder });

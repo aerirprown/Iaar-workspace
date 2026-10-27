@@ -83,3 +83,36 @@ test('a new tab is appended as a blank page with a unique file', async () => {
   await assert.rejects(workspace.addTab(card.id, { name: '  ' }), /1 to 60/);
   await assert.rejects(workspace.addTab('missing', { name: 'X' }), /not found/);
 });
+
+test('tabs can be renamed, reordered and removed, recycling only unused own files', async () => {
+  const repo = await repoWith();
+  const workspace = new Workspace(repo);
+  const card = await workspace.create(projectInput({ title: 'Site', category: 'website' }));
+  const folder = await realpath(path.join(repo, 'workspace', `${localDay()}_site`));
+  // Tabs: 0 Overview, 1 Site Map, 2 Content, 3 Design, 4 Launch. Keep 4, 0 (renamed), 2.
+  const edited = await workspace.editTabs(card.id, { count: 5, tabs: [{ index: 4, name: 'Launch' }, { index: 0, name: ' Home  Page ' }, { index: 2, name: 'Content' }] });
+  const { entities } = JSON.parse(await readFile(path.join(repo, 'workspace/workspace.json'), 'utf8'));
+  assert.deepEqual(entities[0].steps, [{ name: 'Launch', path: 'launch.md' }, { name: 'Home Page', path: 'overview.md' }, { name: 'Content', path: 'content.md' }]);
+  assert.equal(entities[0].defaultStep, 1, 'the default tab follows its move');
+  assert.deepEqual(edited.recycle.sort(), [path.join(folder, 'design.md'), path.join(folder, 'site-map.md')]);
+});
+
+test('tab edits refuse stale lists, empty lists and bad indexes', async () => {
+  const repo = await repoWith();
+  const workspace = new Workspace(repo);
+  const card = await workspace.create(projectInput({ title: 'Plan', category: 'dev' }));
+  await assert.rejects(workspace.editTabs(card.id, { count: 2, tabs: [{ index: 0, name: 'A' }] }), /changed while/);
+  await assert.rejects(workspace.editTabs(card.id, { count: 3, tabs: [] }), /at least one tab/);
+  await assert.rejects(workspace.editTabs(card.id, { count: 3, tabs: [{ index: 0, name: 'A' }, { index: 0, name: 'B' }] }), /does not match/);
+  await assert.rejects(workspace.editTabs(card.id, { count: 3, tabs: [{ index: 7, name: 'A' }] }), /does not match/);
+  await assert.rejects(workspace.editTabs(card.id, { count: 3, tabs: [{ index: 0, name: '  ' }] }), /1 to 60/);
+});
+
+test('a removed tab whose file another tab still uses, or that sits outside the folder, is not recycled', async () => {
+  const repo = await repoWith([{ id: 'c', title: 'C', folder: 'c', steps: [{ name: 'A', path: 'a.md' }, { name: 'A again', path: 'a.md?v=2' }, { name: 'Out', path: '../outside.md' }] }]);
+  await mkdir(path.join(repo, 'workspace/c'));
+  await writeFile(path.join(repo, 'workspace/c/a.md'), '# A\n');
+  await writeFile(path.join(repo, 'workspace/outside.md'), '# Out\n');
+  const edited = await new Workspace(repo).editTabs('c', { count: 3, tabs: [{ index: 0, name: 'A' }] });
+  assert.deepEqual(edited.recycle, []);
+});

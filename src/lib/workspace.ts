@@ -28,6 +28,14 @@ export async function addWorkspaceTab(id: string, name: string) {
   return card
 }
 
+export type TabEdit = { index: number, name: string }
+
+export async function editWorkspaceTabs(id: string, count: number, tabs: TabEdit[]) {
+  if (!isDesktop) throw new Error('Open the desktop app to edit tabs.')
+  await api(`/workspace/entities/${encodeURIComponent(id)}/tabs`, { count, tabs }, 'PUT')
+  window.dispatchEvent(new Event('iaar-workspace-changed'))
+}
+
 export type NewProject = Pick<WorkspaceEntity, 'title' | 'category' | 'description'>
 
 export async function createWorkspaceProject(project: NewProject) {
