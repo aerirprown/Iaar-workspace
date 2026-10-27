@@ -2,6 +2,7 @@ import type { WorkspaceEntity } from '../types'
 import { isDesktop } from '../desktop/client'
 import BrowserSettings from './BrowserSettings'
 import { EntityStatusButton } from './EntityControls'
+import NewProjectButton from './NewProject'
 
 interface TopbarProps {
   entity: WorkspaceEntity | null
@@ -18,6 +19,7 @@ export default function Topbar({ entity, stepIndex, onStep, onHome, reportUrl }:
         <button className="crumb-link" onClick={onHome}>
           Workspace
         </button>
+        <NewProjectButton />
         {entity && (
           <>
             <span className="crumb-sep">/</span>

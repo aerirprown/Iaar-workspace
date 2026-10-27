@@ -14,6 +14,15 @@ export async function updateWorkspaceEntity(id: string, patch: EntityPatch) {
   window.dispatchEvent(new Event('iaar-workspace-changed'))
 }
 
+export type NewProject = Pick<WorkspaceEntity, 'title' | 'category' | 'description'>
+
+export async function createWorkspaceProject(project: NewProject) {
+  if (!isDesktop) throw new Error('Open the desktop app to create projects.')
+  const entity = await api<WorkspaceEntity>('/workspace/entities', project)
+  window.dispatchEvent(new Event('iaar-workspace-changed'))
+  return entity
+}
+
 export function archiveCutoff(): string {
   const d = new Date()
   d.setDate(d.getDate() - ARCHIVE_DAYS)
