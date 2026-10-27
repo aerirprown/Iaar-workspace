@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState
 import { createPortal } from 'react-dom'
 import type { WorkspaceEntity } from '../types'
 import { updateWorkspaceEntity, type EntityPatch } from '../lib/workspace'
-import { CATEGORY_ICONS } from '../lib/categories'
+import { PROJECT_TYPES } from '../lib/categories'
 import { isDesktop } from '../desktop/client'
 import './entity-controls.css'
 
@@ -39,7 +39,7 @@ function EntityMenu({ entity, entities, target, onClose, onChanged }: {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const category = entity.category || 'other'
-  const categories = [...new Set([...Object.keys(CATEGORY_ICONS), 'project', 'tools', 'other', ...entities.map(item => item.category).filter(Boolean)])].sort()
+  const categories = [...new Set([...PROJECT_TYPES, category, ...entities.map(item => item.category).filter(Boolean)])].sort()
 
   useLayoutEffect(() => {
     const element = dialog.current!
