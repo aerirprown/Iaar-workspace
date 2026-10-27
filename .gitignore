@@ -42,3 +42,14 @@ Thumbs.db
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
+
+# Personal projects stay on this computer. Only the starter examples are
+# committed; scripts/registry-clean.mjs does the same for workspace.json.
+/workspace/*/
+!/workspace/_shared/
+!/workspace/2026-09-15_arachne-character/
+!/workspace/2026-09-15_creative-mcp/
+!/workspace/2026-09-15_make-workspace-yours/
+!/workspace/2026-09-15_my-dream-game/
+/projects/*/
+!/projects/my-dream-game/

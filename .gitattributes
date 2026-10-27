@@ -11,3 +11,5 @@
 *.jpg binary
 *.mp4 binary
 *.ico binary
+# Only starter cards are committed; see scripts/registry-clean.mjs.
+workspace/workspace.json filter=sample-cards

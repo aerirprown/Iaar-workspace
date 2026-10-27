@@ -4,7 +4,7 @@
   "version": "0.5.1",
   "type": "module",
   "scripts": {
-    "postinstall": "npm --prefix desktop/service ci && node scripts/fix-pty-permissions.mjs",
+    "postinstall": "npm --prefix desktop/service ci && node scripts/fix-pty-permissions.mjs && node scripts/install-git-filters.mjs",
     "predev": "node scripts/ensure-workspace-link.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
