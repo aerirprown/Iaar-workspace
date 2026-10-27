@@ -1,8 +1,10 @@
-import { readFile, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { lstat, mkdir, readFile, realpath, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { PROJECT_TYPES, tabFile, tabMarkdown } from './project-types.mjs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { realFile, saveJson, sleep } from './util.mjs';
+import { realFile, saveJson, sleep, within } from './util.mjs';
 
 const execute = promisify(execFile);
 export const localDay = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -33,6 +35,18 @@ export function metadataPatch(value) {
     throw invalid('Choose a status, category or pin change.');
   }
   return value;
+}
+
+// UI requests create a card from a known project type; the service picks the
+// ID, folder and tab files.
+export function projectInput(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(key => !['title', 'category', 'description'].includes(key))) throw invalid('Give the project a name and type.');
+  const title = typeof value.title === 'string' ? value.title.trim().replace(/\s+/g, ' ') : '';
+  const description = typeof value.description === 'string' ? value.description.trim().replace(/\s+/g, ' ') : '';
+  if (!title || title.length > 80) throw invalid('Use a project name of 1 to 80 characters.');
+  if (description.length > 300) throw invalid('Keep the description under 300 characters.');
+  if (!Object.hasOwn(PROJECT_TYPES, value.category)) throw invalid(`Choose a project type: ${Object.keys(PROJECT_TYPES).join(', ')}.`);
+  return { title, category: value.category, description };
 }
 
 export class Workspace {
@@ -69,36 +83,159 @@ export class Workspace {
     return { date, cards, commits: [...new Set(lines.filter(line => !line.startsWith('workspace/')))].slice(0, 15), basis: 'Workspace dates and recorded Git changes; not a complete record of unsaved work.' };
   }
   update(id, patch) {
-    const operation = this.writes.catch(() => {}).then(async () => {
+    return this.#serialize(async () => {
       if (patch.status !== undefined && !['active', 'done', 'archived'].includes(patch.status)) throw invalid('Use active, done or archived status.');
       if (patch.pinned !== undefined && typeof patch.pinned !== 'boolean') throw invalid('Pinned must be true or false.');
       if (patch.category !== undefined && (typeof patch.category !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(patch.category))) throw invalid('Use a category with lowercase letters, numbers and hyphens.');
       if (patch.status === undefined && patch.pinned === undefined && patch.category === undefined) throw invalid('Choose a status, category or pin change.');
-      for (let attempt = 0; attempt < 6; attempt++) {
-        const source = await readFile(this.file, 'utf8');
-        const registry = JSON.parse(source);
+      return this.#commit(registry => {
         const entity = registry.entities.find(item => item.id === id);
         if (!entity) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
         if (patch.status !== undefined) entity.status = patch.status;
         if (patch.pinned !== undefined) entity.pinned = patch.pinned;
         if (patch.category !== undefined) entity.category = patch.category;
         entity.updated = localDay();
-        // Preserve other agents' latest registry changes instead of saving a stale snapshot.
-        if (await readFile(this.file, 'utf8') !== source) continue;
-        try { await saveJson(this.file, registry); }
-        catch (error) {
-          // Windows indexers/readers can briefly lock atomic replacements. Retry
-          // from a fresh registry so another agent's edits are still retained.
-          if (!['EPERM', 'EACCES', 'EBUSY'].includes(error.code) || attempt === 5) throw error;
-          await sleep(40 * (attempt + 1));
-          continue;
-        }
-        this.changed();
-        return brief(entity);
-      }
-      throw new Error('Workspace is being updated by another task. Try the change again.');
+        return entity;
+      });
     });
+  }
+  // Creates a dated card folder with the type's starter tabs, then registers it.
+  create({ title, category, description }) {
+    return this.#serialize(async () => {
+      const { entities } = await this.registry();
+      const base = title.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48).replace(/-+$/, '') || 'project';
+      const day = localDay();
+      let id = base;
+      for (let n = 2; entities.some(item => item.id === id) || existsSync(path.join(this.repo, 'workspace', `${day}_${id}`)); n++) id = `${base}-${n}`;
+      const folder = `${day}_${id}`, directory = path.join(this.repo, 'workspace', folder);
+      const tabs = PROJECT_TYPES[category];
+      await mkdir(directory);
+      try {
+        for (const item of tabs) await writeFile(path.join(directory, tabFile(item.name)), tabMarkdown(title, item), { flag: 'wx' });
+        return await this.#commit(registry => {
+          if (registry.entities.some(item => item.id === id)) throw new Error('Another task created a card with this name. Try again.');
+          const entity = { id, title, description, type: 'group', category, created: day, updated: day, folder, steps: tabs.map(item => ({ name: item.name, path: tabFile(item.name) })), status: 'active', pinned: false, defaultStep: 0 };
+          registry.entities.unshift(entity);
+          return entity;
+        });
+      } catch (error) {
+        await rm(directory, { recursive: true, force: true });
+        throw error;
+      }
+    });
+  }
+  // Adds a blank Markdown tab to a card, inside that card's own folder.
+  addTab(id, value) {
+    return this.#serialize(async () => {
+      const name = typeof value?.name === 'string' ? value.name.trim().replace(/\s+/g, ' ') : '';
+      if (!name || name.length > 60) throw invalid('Use a tab name of 1 to 60 characters.');
+      const entity = (await this.registry()).entities.find(item => item.id === id);
+      if (!entity) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+      const root = await realpath(path.join(this.repo, 'workspace'));
+      const directory = await realpath(path.resolve(root, entity.folder || '.')).catch(() => null);
+      if (!directory || !within(root, directory)) throw invalid('This card has no folder for new tabs.');
+      const base = tabFile(name).replace(/\.md$/, '') || 'tab';
+      let file = `${base}.md`;
+      for (let n = 2; existsSync(path.join(directory, file)) || (entity.steps || []).some(step => step.path === file); n++) file = `${base}-${n}.md`;
+      await writeFile(path.join(directory, file), tabMarkdown(entity.title, { name, sections: [] }), { flag: 'wx' });
+      try {
+        return await this.#commit(registry => {
+          const current = registry.entities.find(item => item.id === id);
+          if (!current) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+          current.steps = [...(current.steps || []), { name, path: file }];
+          current.updated = localDay();
+          return current;
+        });
+      } catch (error) {
+        await rm(path.join(directory, file), { force: true });
+        throw error;
+      }
+    });
+  }
+  // Renames, reorders and removes tabs. `tabs` lists the kept tabs in their new
+  // order by original index; `count` is the number of tabs the editor started
+  // from, so a change made meanwhile by an agent is never overwritten. Files of
+  // removed tabs inside the card's folder are returned for the Recycle Bin.
+  editTabs(id, value) {
+    return this.#serialize(async () => {
+      const tabs = Array.isArray(value?.tabs) ? value.tabs : null;
+      if (!tabs || !tabs.length) throw invalid('A project needs at least one tab. Delete the project instead.');
+      const edits = tabs.map(tab => ({ index: tab?.index, name: typeof tab?.name === 'string' ? tab.name.trim().replace(/\s+/g, ' ') : '' }));
+      if (edits.some(tab => !tab.name || tab.name.length > 60)) throw invalid('Use tab names of 1 to 60 characters.');
+      let removed = [], entity;
+      const card = await this.#commit(registry => {
+        entity = registry.entities.find(item => item.id === id);
+        if (!entity) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+        const steps = entity.steps || [];
+        if (value.count !== steps.length) throw Object.assign(new Error('The tabs changed while you were editing. Close and try again.'), { status: 409 });
+        if (edits.some(tab => !Number.isInteger(tab.index) || tab.index < 0 || tab.index >= steps.length) || new Set(edits.map(tab => tab.index)).size !== edits.length) throw invalid('The tab list does not match this project.');
+        const kept = new Set(edits.map(tab => tab.index));
+        removed = steps.filter((_, index) => !kept.has(index));
+        entity.steps = edits.map(tab => ({ ...steps[tab.index], name: tab.name }));
+        // Keep the default tab when it moves; cards without one keep opening the latest.
+        if (entity.defaultStep !== undefined) entity.defaultStep = Math.max(0, edits.findIndex(tab => tab.index === entity.defaultStep));
+        entity.updated = localDay();
+        return entity;
+      });
+      // Recycle only real files in the card's own folder that no kept tab still uses.
+      const root = await realpath(path.join(this.repo, 'workspace'));
+      const folder = await realpath(path.resolve(root, entity.folder || '.')).catch(() => null);
+      const inUse = new Set(entity.steps.map(step => String(step.path).split('?')[0]));
+      const recycle = [];
+      for (const step of removed) {
+        const relative = String(step.path || '').split('?')[0];
+        if (!folder || folder === root || !relative || inUse.has(relative)) continue;
+        const file = path.resolve(folder, relative);
+        const actual = await lstat(file).then(item => item.isFile() ? realpath(file) : null, () => null);
+        if (actual && within(folder, actual) && actual !== folder) recycle.push(actual);
+      }
+      return { ...card, recycle: [...new Set(recycle)] };
+    });
+  }
+  // Unregisters a card and returns its folder for the Recycle Bin. A folder
+  // that is shared, the Workspace root or outside it stays where it is.
+  remove(id) {
+    return this.#serialize(async () => {
+      let removed;
+      const card = await this.#commit(registry => {
+        const index = registry.entities.findIndex(item => item.id === id);
+        if (index < 0) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+        [removed] = registry.entities.splice(index, 1);
+        return removed;
+      });
+      const root = await realpath(path.join(this.repo, 'workspace'));
+      const others = (await this.registry()).entities.map(item => item.folder);
+      const directory = typeof removed.folder === 'string' && removed.folder ? path.resolve(root, removed.folder) : root;
+      // Resolve links so a junction inside Workspace never sends its target to the bin.
+      const actual = await lstat(directory).then(item => item.isDirectory() && !item.isSymbolicLink() ? realpath(directory) : null, () => null);
+      const own = !!actual && actual !== root && within(root, actual) && path.basename(actual) !== '_shared'
+        && !others.some(folder => typeof folder === 'string' && within(directory, path.resolve(root, folder)));
+      return { ...card, folder: own ? actual : null };
+    });
+  }
+  #serialize(task) {
+    const operation = this.writes.catch(() => {}).then(task);
     this.writes = operation;
     return operation;
+  }
+  async #commit(apply) {
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const source = await readFile(this.file, 'utf8');
+      const registry = JSON.parse(source);
+      const entity = apply(registry);
+      // Preserve other agents' latest registry changes instead of saving a stale snapshot.
+      if (await readFile(this.file, 'utf8') !== source) continue;
+      try { await saveJson(this.file, registry); }
+      catch (error) {
+        // Windows indexers/readers can briefly lock atomic replacements. Retry
+        // from a fresh registry so another agent's edits are still retained.
+        if (!['EPERM', 'EACCES', 'EBUSY'].includes(error.code) || attempt === 5) throw error;
+        await sleep(40 * (attempt + 1));
+        continue;
+      }
+      this.changed();
+      return brief(entity);
+    }
+    throw new Error('Workspace is being updated by another task. Try the change again.');
   }
 }

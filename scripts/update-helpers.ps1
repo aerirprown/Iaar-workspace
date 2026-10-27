@@ -26,7 +26,8 @@ function Get-IaarInstallDirectory {
   foreach ($taskRegistry in @('HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*', 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*')) {
     $taskInstallEntry = Get-ItemProperty -Path $taskRegistry -ErrorAction SilentlyContinue |
       Where-Object { $_.DisplayName -eq 'Iaar Workspace' -and $_.InstallLocation } | Select-Object -First 1
-    if ($taskInstallEntry) { return [IO.Path]::GetFullPath($taskInstallEntry.InstallLocation) }
+    # The NSIS installer may record the folder wrapped in quotes.
+    if ($taskInstallEntry) { return [IO.Path]::GetFullPath($taskInstallEntry.InstallLocation.Trim().Trim('"')) }
   }
   return (Join-Path $env:LOCALAPPDATA 'Iaar Workspace')
 }

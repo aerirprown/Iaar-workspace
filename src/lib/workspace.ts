@@ -14,6 +14,37 @@ export async function updateWorkspaceEntity(id: string, patch: EntityPatch) {
   window.dispatchEvent(new Event('iaar-workspace-changed'))
 }
 
+export async function deleteWorkspaceEntity(id: string) {
+  if (!isDesktop) throw new Error('Open the desktop app to delete Workspace cards.')
+  const card = await api<WorkspaceEntity & { folder: string | null }>(`/workspace/entities/${encodeURIComponent(id)}`, undefined, 'DELETE')
+  window.dispatchEvent(new Event('iaar-workspace-changed'))
+  return card
+}
+
+export async function addWorkspaceTab(id: string, name: string) {
+  if (!isDesktop) throw new Error('Open the desktop app to add tabs.')
+  const card = await api<{ steps: { name: string, index: number }[] }>(`/workspace/entities/${encodeURIComponent(id)}/tabs`, { name })
+  window.dispatchEvent(new Event('iaar-workspace-changed'))
+  return card
+}
+
+export type TabEdit = { index: number, name: string }
+
+export async function editWorkspaceTabs(id: string, count: number, tabs: TabEdit[]) {
+  if (!isDesktop) throw new Error('Open the desktop app to edit tabs.')
+  await api(`/workspace/entities/${encodeURIComponent(id)}/tabs`, { count, tabs }, 'PUT')
+  window.dispatchEvent(new Event('iaar-workspace-changed'))
+}
+
+export type NewProject = Pick<WorkspaceEntity, 'title' | 'category' | 'description'>
+
+export async function createWorkspaceProject(project: NewProject) {
+  if (!isDesktop) throw new Error('Open the desktop app to create projects.')
+  const entity = await api<WorkspaceEntity>('/workspace/entities', project)
+  window.dispatchEvent(new Event('iaar-workspace-changed'))
+  return entity
+}
+
 export function archiveCutoff(): string {
   const d = new Date()
   d.setDate(d.getDate() - ARCHIVE_DAYS)

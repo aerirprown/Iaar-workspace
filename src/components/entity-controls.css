@@ -54,3 +54,11 @@ html[data-workspace-theme="light"] .entity-menu { background: #fff; color-scheme
 }
 
 .entity-status-button:disabled { cursor: default; }
+.entity-delete { margin-top: 12px; color: var(--red); }
+.entity-delete-confirm { margin-top: 12px; padding: 10px; border: 1px solid var(--red); border-radius: 8px; }
+.entity-delete-confirm p { margin: 0 0 10px; font-size: 12px; line-height: 1.55; color: var(--text-dim); overflow-wrap: anywhere; }
+.entity-delete-confirm strong { color: var(--text); }
+.entity-delete-confirm code { font-size: 11px; }
+.entity-delete-confirm > div { display: flex; gap: 8px; }
+.entity-delete-confirm button { flex: 1; min-height: 34px; border-radius: 8px; border: 1px solid var(--hairline-strong); background: transparent; color: var(--text); font: inherit; cursor: pointer; }
+.entity-delete-confirm .entity-delete-final { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; }
