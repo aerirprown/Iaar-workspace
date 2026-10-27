@@ -212,6 +212,13 @@ export async function createService({ repo, uiDir, stateDir, token = secret(), n
         const cardMetadata = url.pathname.match(/^\/api\/workspace\/entities\/([^/]+)$/);
         if (method === 'PATCH' && cardMetadata) return json(response, 200, await workspace.update(decodeURIComponent(cardMetadata[1]), metadataPatch(data)));
         if (method === 'POST' && url.pathname === '/api/workspace/entities') return json(response, 201, await workspace.create(projectInput(data)));
+        const cardTabs = url.pathname.match(/^\/api\/workspace\/entities\/([^/]+)\/tabs$/);
+        if (method === 'POST' && cardTabs) return json(response, 201, await workspace.addTab(decodeURIComponent(cardTabs[1]), data));
+        if (method === 'DELETE' && cardMetadata) {
+          const card = await workspace.remove(decodeURIComponent(cardMetadata[1]));
+          if (card.folder) native({ type: 'recycle-file', path: card.folder });
+          return json(response, 200, card);
+        }
         if (method === 'GET' && url.pathname === '/api/projects') {
           const matches = await projects.detect(url.searchParams.get('path') || repo);
           return json(response, 200, { matches, adapters: projects.adapters.map(item => ({ id: item.id, label: item.label })) });

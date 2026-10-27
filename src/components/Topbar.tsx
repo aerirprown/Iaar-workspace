@@ -3,6 +3,7 @@ import { isDesktop } from '../desktop/client'
 import BrowserSettings from './BrowserSettings'
 import { EntityStatusButton } from './EntityControls'
 import NewProjectButton from './NewProject'
+import AddTabButton from './AddTab'
 
 interface TopbarProps {
   entity: WorkspaceEntity | null
@@ -32,6 +33,7 @@ export default function Topbar({ entity, stepIndex, onStep, onHome, reportUrl }:
 
       {entity && (
         <div className="topbar-right">
+          <div className="step-tabs-group">
           {entity.steps.length > 0 && (
             <div className="step-tabs" role="tablist">
               {entity.steps.map((s, i) => (
@@ -48,6 +50,8 @@ export default function Topbar({ entity, stepIndex, onStep, onHome, reportUrl }:
               ))}
             </div>
           )}
+          <AddTabButton entity={entity} />
+          </div>
           {reportUrl && (
             <a
               className="open-ext"

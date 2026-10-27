@@ -1,10 +1,10 @@
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, realpath, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { PROJECT_TYPES, tabFile, tabMarkdown } from './project-types.mjs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { realFile, saveJson, sleep } from './util.mjs';
+import { realFile, saveJson, sleep, within } from './util.mjs';
 
 const execute = promisify(execFile);
 export const localDay = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -122,6 +122,55 @@ export class Workspace {
         await rm(directory, { recursive: true, force: true });
         throw error;
       }
+    });
+  }
+  // Adds a blank Markdown tab to a card, inside that card's own folder.
+  addTab(id, value) {
+    return this.#serialize(async () => {
+      const name = typeof value?.name === 'string' ? value.name.trim().replace(/\s+/g, ' ') : '';
+      if (!name || name.length > 60) throw invalid('Use a tab name of 1 to 60 characters.');
+      const entity = (await this.registry()).entities.find(item => item.id === id);
+      if (!entity) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+      const root = await realpath(path.join(this.repo, 'workspace'));
+      const directory = await realpath(path.resolve(root, entity.folder || '.')).catch(() => null);
+      if (!directory || !within(root, directory)) throw invalid('This card has no folder for new tabs.');
+      const base = tabFile(name).replace(/\.md$/, '') || 'tab';
+      let file = `${base}.md`;
+      for (let n = 2; existsSync(path.join(directory, file)) || (entity.steps || []).some(step => step.path === file); n++) file = `${base}-${n}.md`;
+      await writeFile(path.join(directory, file), tabMarkdown(entity.title, { name, sections: [] }), { flag: 'wx' });
+      try {
+        return await this.#commit(registry => {
+          const current = registry.entities.find(item => item.id === id);
+          if (!current) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+          current.steps = [...(current.steps || []), { name, path: file }];
+          current.updated = localDay();
+          return current;
+        });
+      } catch (error) {
+        await rm(path.join(directory, file), { force: true });
+        throw error;
+      }
+    });
+  }
+  // Unregisters a card and returns its folder for the Recycle Bin. A folder
+  // that is shared, the Workspace root or outside it stays where it is.
+  remove(id) {
+    return this.#serialize(async () => {
+      let removed;
+      const card = await this.#commit(registry => {
+        const index = registry.entities.findIndex(item => item.id === id);
+        if (index < 0) throw Object.assign(new Error('Workspace card was not found.'), { status: 404 });
+        [removed] = registry.entities.splice(index, 1);
+        return removed;
+      });
+      const root = await realpath(path.join(this.repo, 'workspace'));
+      const others = (await this.registry()).entities.map(item => item.folder);
+      const directory = typeof removed.folder === 'string' && removed.folder ? path.resolve(root, removed.folder) : root;
+      // Resolve links so a junction inside Workspace never sends its target to the bin.
+      const actual = await lstat(directory).then(item => item.isDirectory() && !item.isSymbolicLink() ? realpath(directory) : null, () => null);
+      const own = !!actual && actual !== root && within(root, actual) && path.basename(actual) !== '_shared'
+        && !others.some(folder => typeof folder === 'string' && within(directory, path.resolve(root, folder)));
+      return { ...card, folder: own ? actual : null };
     });
   }
   #serialize(task) {

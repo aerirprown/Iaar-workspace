@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { WorkspaceEntity } from '../types'
-import { updateWorkspaceEntity, type EntityPatch } from '../lib/workspace'
+import { deleteWorkspaceEntity, updateWorkspaceEntity, type EntityPatch } from '../lib/workspace'
+import { parseHash } from '../lib/route'
 import { PROJECT_TYPES } from '../lib/categories'
 import { isDesktop } from '../desktop/client'
 import './entity-controls.css'
@@ -38,6 +39,7 @@ function EntityMenu({ entity, entities, target, onClose, onChanged }: {
   const dialog = useRef<HTMLDialogElement>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [confirming, setConfirming] = useState(false)
   const category = entity.category || 'other'
   const categories = [...new Set([...PROJECT_TYPES, category, ...entities.map(item => item.category).filter(Boolean)])].sort()
 
@@ -73,6 +75,20 @@ function EntityMenu({ entity, entities, target, onClose, onChanged }: {
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'The card could not be updated. Try again.')
     } finally { setSaving(false) }
+  }
+
+  async function remove() {
+    if (saving) return
+    setSaving(true); setError('')
+    try {
+      await deleteWorkspaceEntity(entity.id)
+      if (parseHash().id === entity.id) window.location.hash = ''
+      await onChanged()
+      onClose()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'The card could not be deleted. Try again.')
+      setSaving(false)
+    }
   }
 
   return createPortal(
@@ -115,6 +131,17 @@ function EntityMenu({ entity, entities, target, onClose, onChanged }: {
         {entity.pinned ? 'Unpin card' : 'Pin card'}
       </button>
       <p className="entity-menu-hint">Archived cards keep their files and tabs. Find them in search or Show archive.</p>
+      {confirming ? (
+        <div className="entity-delete-confirm" role="group" aria-label="Confirm delete">
+          <p><strong>Delete {entity.title}?</strong> The card and all its tabs are removed. Its folder <code>workspace/{entity.folder}</code> goes to the Recycle Bin.</p>
+          <div>
+            <button type="button" disabled={saving} onClick={() => setConfirming(false)}>Cancel</button>
+            <button type="button" className="entity-delete-final" disabled={saving} onClick={() => void remove()}>Delete</button>
+          </div>
+        </div>
+      ) : (
+        <button type="button" className="entity-pin-toggle entity-delete" disabled={saving} onClick={() => setConfirming(true)}>Delete project…</button>
+      )}
       {saving && <p className="entity-menu-feedback" role="status">Saving…</p>}
       {error && <p className="entity-menu-error" role="alert">{error}</p>}
     </dialog>, document.body,
