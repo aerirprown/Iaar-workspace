@@ -200,7 +200,7 @@ export default function TerminalPane({ id, agent, fontSize, appearance, onAttach
     const terminal = terminalRef.current
     if (!terminal) return
     terminal.options.theme = appearance === 'focus' ? focusTheme : originalTheme
-    if (appearance === 'focus') return decorateTerminal(terminal, agent)
+    return appearance === 'focus' ? decorateTerminal(terminal, agent) : decorateTerminal(terminal, agent, 'attention')
   }, [id, agent, appearance])
   useEffect(() => {
     if (terminalRef.current) { terminalRef.current.options.fontSize = fontSize; fitRef.current?.fit(); sendEvent({ type: 'resize', id, cols: terminalRef.current.cols, rows: terminalRef.current.rows }) }
